@@ -23,11 +23,6 @@ variable "project_type" {
   description = "The type of project you want to create"
   type        = string
   default     = "base"
-
-  validation {
-    condition     = contains(["terraform", "base"], var.project_type)
-    error_message = "Invalid project type, currently supported types are: general, terraform"
-  }
 }
 
 variable "environment" {

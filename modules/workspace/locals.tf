@@ -16,6 +16,11 @@ locals {
 
     terraform_version = var.terraform_version
     description       = var.description
+
+    workspace_module = {
+      version = "0.0.2"
+      source  = path.module
+    }
   }
 
   # project_dirs is on project_types

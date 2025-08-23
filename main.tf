@@ -15,7 +15,7 @@ module "terraform_workspace" {
   base_path      = "./testing"
 
   created_by   = "Mora"
-  description  = "Test project"
+  description  = "XYZ Infra"
   project_type = "terraform"
   environment  = "dev"
 
@@ -23,7 +23,7 @@ module "terraform_workspace" {
   create_templates  = true
 
   extra_dirs =[
-    "test_dir"
+    "super_custom_dir"
   ]
 
   tags = {
@@ -36,18 +36,18 @@ module "ansible_workspace" {
   source = "./modules/workspace"
 
   workspace_name = "Ansible"
-  base_path      = "./testing/"
+  base_path      = "./testing"
 
   created_by   = "Mora"
-  description  = "Test project"
-  project_type = "base"
+  description  = "Super useful paybooks"
+  project_type = "ansible"
   environment  = "dev"
 
   terraform_version = ">= 1.5"
   create_templates  = true
 
   extra_dirs =[
-    "test_dir"
+    "superprod_inv"
   ]
 
   tags = {

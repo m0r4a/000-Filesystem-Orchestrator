@@ -1,6 +1,7 @@
 locals {
   available_modules = {
     terraform = module.terraform_project
+    ansible = module.ansible_project
   }
 }
 
@@ -20,6 +21,17 @@ module "terraform_project" {
   create_templates   = var.create_templates
   workspace_metadata = local.workspace_metadata
 }
+
+
+module "ansible_project" {
+  count  = var.project_type == "ansible" ? 1 : 0
+  source = "./project_types/ansible"
+
+  workspace_path     = local.workspace_path
+  create_templates   = var.create_templates
+  workspace_metadata = local.workspace_metadata
+}
+
 
 locals {
   selected_module = one([

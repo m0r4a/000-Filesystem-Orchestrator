@@ -1,8 +1,19 @@
 resource "null_resource" "create_directories" {
   count = length(local.directory_paths)
 
+  triggers = {
+    # you need a trigger
+    # you wouln't be able to delete it otherwise
+    base_path = var.base_path
+  }
+
   provisioner "local-exec" {
     command = "mkdir -p '${local.directory_paths[count.index]}'"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm -rf '${self.triggers.base_path}'"
   }
 }
 
@@ -22,10 +33,6 @@ resource "local_file" "metadata" {
     metadata      = local.workspace_metadata
     directories   = local.directory_paths
     files_created = keys(local.template_files)
-    terraform_module = {
-      version = "0.0.1"
-      source  = path.module
-    }
   })
 
   depends_on = [local_file.templates]
