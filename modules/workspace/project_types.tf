@@ -9,7 +9,7 @@ locals {
 module "base_project" {
   source = "./project_types/base"
 
-  workspace_path     = local.workspace_path
+  base_path     = var.base_path
   create_templates   = var.create_templates
   workspace_metadata = local.workspace_metadata
 }

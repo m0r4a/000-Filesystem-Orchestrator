@@ -1,5 +1,5 @@
-variable "workspace_path" {
-  description = "The workspace path"
+variable "base_path" {
+  description = "This is the root folder for the project"
   type        = string
 }
 
@@ -20,11 +20,11 @@ locals {
 
   base_templates = var.create_templates ? {
     readme = {
-      path    = "${var.workspace_path}/README.md"
+      path    = "${var.base_path}/README.md"
       content = templatefile("${path.module}/templates/README.md.tpl", var.workspace_metadata)
     }
     gitignore = {
-      path    = "${var.workspace_path}/.gitignore"
+      path    = "${var.base_path}/.gitignore"
       content = file("${path.module}/templates/gitignore.tpl")
     }
   } : {}

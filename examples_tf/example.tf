@@ -1,0 +1,37 @@
+terraform {
+  required_version = ">= 1.12"
+  required_providers {
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.4"
+    }
+  }
+}
+
+module "testing" {
+  source = "./modules/workspace"
+
+  workspace_name = "example_workspace"
+  base_path      = "../example_workdir"
+
+  created_by   = "A nice user"
+  description  = "This works as a guideline for how you can implement a new project type"
+  project_type = "example"
+  environment  = "dev"
+
+  terraform_version = ">= 1.5"
+  create_templates  = true
+
+  extra_dirs = [
+    "your_dir"
+  ]
+
+  extra_vars = {
+    custom_var = "for your templates"
+  }
+
+  tags = {
+    Team    = "Swarm Lords",
+    Project = "000-Filesystem-Orchestrator"
+  }
+}
