@@ -18,10 +18,6 @@ locals {
     description       = var.description
   }
 
-  # project_types needs the workspace_metadata to pass it to the templates if needed
-  # so it's declared first and then after knowing which type of project dirs
-  # will be used "all_directories" can be calculated
-
   # project_dirs is on project_types
   all_directories = distinct(concat(local.project_dirs, var.extra_dirs))
 
