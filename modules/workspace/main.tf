@@ -42,8 +42,8 @@ resource "local_file" "metadata" {
 resource "null_resource" "set_permissions" {
   provisioner "local-exec" {
     command = <<-EOT
-      find '${local.workspace_path}' -type d -exec chmod 755 {} \;
-      find '${local.workspace_path}' -type f -exec chmod 644 {} \;
+      find '${var.base_path}' -type d -exec chmod 755 {} \;
+      find '${var.base_path}' -type f -exec chmod 644 {} \;
       if [ -d '${local.workspace_path}/scripts' ]; then
         find '${local.workspace_path}/scripts' -name "*.sh" -exec chmod +x {} \;
       fi
