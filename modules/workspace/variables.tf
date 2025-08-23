@@ -62,6 +62,12 @@ variable "extra_dirs" {
   }
 }
 
+variable "extra_vars" {
+  description = "Extra variables for the templates"
+  type        = map(string)
+  default     = {}
+}
+
 variable "terraform_version" {
   description = "Terraform version for projects"
   type        = string

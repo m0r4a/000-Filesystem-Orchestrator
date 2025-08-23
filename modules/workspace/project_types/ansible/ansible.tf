@@ -6,12 +6,16 @@ variable "workspace_path" {
 variable "create_templates" {
   description = "Weather to create template files based on project type"
   type        = bool
-  default     = true
 }
 
 variable "workspace_metadata" {
   description = "Pretty straightforward"
   type        = any
+}
+
+variable "extra_vars" {
+  description = "Extra variables dictionary"
+  type        = map(string)
 }
 
 locals {
@@ -36,7 +40,7 @@ locals {
     }
     production_inventory = {
       path    = "${var.workspace_path}/production/inventory.ini"
-      content = file("${path.module}/templates/inventory.ini.tpl")
+      content = templatefile("${path.module}/templates/inventory.ini.tpl", var.workspace_metadata)
     }
   } : {}
 

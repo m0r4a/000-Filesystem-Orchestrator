@@ -22,7 +22,7 @@ module "terraform_workspace" {
   terraform_version = ">= 1.5"
   create_templates  = true
 
-  extra_dirs =[
+  extra_dirs = [
     "super_custom_dir"
   ]
 
@@ -46,9 +46,37 @@ module "ansible_workspace" {
   terraform_version = ">= 1.5"
   create_templates  = true
 
-  extra_dirs =[
+  extra_dirs = [
     "superprod_inv"
   ]
+
+  tags = {
+    Team    = "Swarm Lords",
+    Project = "000-Filesystem-Orchestrator"
+  }
+}
+
+module "testing" {
+  source = "./modules/workspace"
+
+  workspace_name = "example"
+  base_path      = "./testing"
+
+  created_by   = "Mora"
+  description  = "Super useful paybooks"
+  project_type = "example"
+  environment  = "dev"
+
+  terraform_version = ">= 1.5"
+  create_templates  = true
+
+  extra_dirs = [
+    "superprod_inv"
+  ]
+
+  extra_vars = {
+    testvar = "test"
+  }
 
   tags = {
     Team    = "Swarm Lords",

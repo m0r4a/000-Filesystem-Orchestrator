@@ -1,7 +1,8 @@
 locals {
   available_modules = {
+    example   = module.example_project
     terraform = module.terraform_project
-    ansible = module.ansible_project
+    ansible   = module.ansible_project
   }
 }
 
@@ -13,6 +14,16 @@ module "base_project" {
   workspace_metadata = local.workspace_metadata
 }
 
+module "example_project" {
+  count  = var.project_type == "example" ? 1 : 0
+  source = "./project_types/example"
+
+  workspace_path     = local.workspace_path
+  create_templates   = var.create_templates
+  workspace_metadata = local.workspace_metadata
+  extra_vars         = var.extra_vars
+}
+
 module "terraform_project" {
   count  = var.project_type == "terraform" ? 1 : 0
   source = "./project_types/terraform"
@@ -22,7 +33,6 @@ module "terraform_project" {
   workspace_metadata = local.workspace_metadata
 }
 
-
 module "ansible_project" {
   count  = var.project_type == "ansible" ? 1 : 0
   source = "./project_types/ansible"
@@ -30,6 +40,7 @@ module "ansible_project" {
   workspace_path     = local.workspace_path
   create_templates   = var.create_templates
   workspace_metadata = local.workspace_metadata
+  extra_vars         = var.extra_vars
 }
 
 
