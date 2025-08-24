@@ -1,8 +1,8 @@
 project_info:
-  name: ${workspace_metadata.workspace_name}
-  created_by: ${workspace_metadata.created_by}
-  environment: ${workspace_metadata.environment}
-  type: ${workspace_metadata.project_type}
+  name: ${project_metadata.project_name}
+  created_by: ${project_metadata.created_by}
+  environment: ${project_metadata.environment}
+  type: ${project_metadata.project_type}
 
 # Extra variables
 custom_config:
@@ -12,8 +12,8 @@ custom_config:
 
 # Mixed usage example
 deployment:
-  project: ${workspace_metadata.workspace_name}
-  target: ${workspace_metadata.environment}
+  project: ${project_metadata.project_name}
+  target: ${project_metadata.environment}
 %{ if lookup(extra_vars, "deploy_version", "") != "" ~}
   version: ${extra_vars.deploy_version}
 %{ endif ~}

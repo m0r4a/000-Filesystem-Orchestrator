@@ -11,8 +11,9 @@ terraform {
 module "terraform_workspace" {
   source = "./modules/workspace"
 
-  workspace_name = "Terraform"
-  base_path      = "./testing"
+  project_name     = "Terraform"
+  workspace_master = true
+  workspace_path   = "./testing"
 
   created_by   = "Mora"
   description  = "XYZ Infra"
@@ -21,6 +22,7 @@ module "terraform_workspace" {
 
   terraform_version = ">= 1.5"
   create_templates  = true
+  common            = true
 
   extra_dirs = [
     "super_custom_dir"
@@ -35,8 +37,8 @@ module "terraform_workspace" {
 module "ansible_workspace" {
   source = "./modules/workspace"
 
-  workspace_name = "Ansible"
-  base_path      = "./testing"
+  project_name   = "Ansible"
+  workspace_path = "./testing"
 
   created_by   = "Mora"
   description  = "Super useful paybooks"
@@ -45,6 +47,7 @@ module "ansible_workspace" {
 
   terraform_version = ">= 1.5"
   create_templates  = true
+  common            = true
 
   extra_dirs = [
     "superprod_inv"
@@ -59,8 +62,8 @@ module "ansible_workspace" {
 module "testing" {
   source = "./modules/workspace"
 
-  workspace_name = "example"
-  base_path      = "./testing"
+  project_name   = "example"
+  workspace_path = "./testing"
 
   created_by   = "Mora"
   description  = "Super useful paybooks"

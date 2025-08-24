@@ -11,8 +11,8 @@ terraform {
 module "example" {
   source = "../../modules/workspace"
 
-  workspace_name = "Terraform"
-  base_path      = "../../workdir_example"
+  project_name   = "Terraform"
+  workspace_path = "../../workdir_example"
 
   created_by   = "A nice user"
   description  = "Very basic terraform template"

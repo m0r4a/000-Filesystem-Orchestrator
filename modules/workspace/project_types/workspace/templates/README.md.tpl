@@ -1,4 +1,4 @@
-# ${workspace_name}
+# ${project_name}
 
 ## TODO: Improve this
 
@@ -20,4 +20,4 @@ ${description != "" ? description : "Generated workspace for ${project_type} pro
 ## Metadata
 
 This workspace was generated using the Terraform Workspace Module.
-Metadata is stored in `workspace-metadata.json`.
+Metadata is stored in `(project_name)/.metadata.json`.

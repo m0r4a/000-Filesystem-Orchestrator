@@ -11,8 +11,8 @@ terraform {
 module "example" {
   source = "../../modules/workspace"
 
-  workspace_name = "example_workspace"
-  base_path      = "../../workdir_example"
+  project_name   = "example_workspace"
+  workspace_path = "../../workdir_example"
 
 
   created_by   = "A nice user"
@@ -22,6 +22,8 @@ module "example" {
 
   terraform_version = ">= 1.5"
   create_templates  = true
+  common            = true
+  workspace_master  = true
 
   extra_dirs = [
     "your_dir"

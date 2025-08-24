@@ -1,4 +1,4 @@
-# Outputs for ${workspace_name}
+# Outputs for ${project_name}
 
 output "project_info" {
   description = "Project information"

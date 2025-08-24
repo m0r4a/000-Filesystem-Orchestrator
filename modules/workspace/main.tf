@@ -4,7 +4,7 @@ resource "null_resource" "create_directories" {
   triggers = {
     # you need a trigger
     # you wouln't be able to delete it otherwise
-    base_path = var.base_path
+    workspace_path = var.workspace_path
   }
 
   provisioner "local-exec" {
@@ -13,7 +13,7 @@ resource "null_resource" "create_directories" {
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm -rf '${self.triggers.base_path}'"
+    command = "rm -rf '${self.triggers.workspace_path}'"
   }
 }
 
@@ -27,10 +27,10 @@ resource "local_file" "templates" {
 }
 
 resource "local_file" "metadata" {
-  filename = "${local.workspace_path}/.metadata.json"
+  filename = "${local.project_path}/.metadata.json"
 
   content = jsonencode({
-    metadata      = local.workspace_metadata
+    metadata      = local.project_metadata
     directories   = local.directory_paths
     files_created = keys(local.template_files)
   })
@@ -42,10 +42,10 @@ resource "local_file" "metadata" {
 resource "null_resource" "set_permissions" {
   provisioner "local-exec" {
     command = <<-EOT
-      find '${var.base_path}' -type d -exec chmod 755 {} \;
-      find '${var.base_path}' -type f -exec chmod 644 {} \;
-      if [ -d '${local.workspace_path}/scripts' ]; then
-        find '${local.workspace_path}/scripts' -name "*.sh" -exec chmod +x {} \;
+      find '${var.workspace_path}' -type d -exec chmod 755 {} \;
+      find '${var.workspace_path}' -type f -exec chmod 644 {} \;
+      if [ -d '${local.project_path}/scripts' ]; then
+        find '${local.project_path}/scripts' -name "*.sh" -exec chmod +x {} \;
       fi
     EOT
   }

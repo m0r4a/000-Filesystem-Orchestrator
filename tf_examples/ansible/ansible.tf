@@ -11,8 +11,8 @@ terraform {
 module "example" {
   source = "../../modules/workspace"
 
-  workspace_name = "Ansible"
-  base_path      = "../../workdir_example"
+  project_name   = "Ansible"
+  workspace_path = "../../workdir_example"
 
   created_by   = "A nice user"
   description  = "This is just an ansible structure"

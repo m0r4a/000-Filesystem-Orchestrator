@@ -2,8 +2,8 @@ terraform {
   required_version = ">= 1.12"
 }
 
-variable "base_path" {
-  description = "This is the root folder for the project"
+variable "project_path" {
+  description = "The project path"
   type        = string
 }
 
@@ -13,13 +13,13 @@ variable "create_templates" {
   default     = true
 }
 
-variable "workspace_metadata" {
+variable "project_metadata" {
   description = "Pretty straightforward"
   type        = any
 }
 
 output "templates" {
-  value = local.base_templates
+  value = local.common_templates
 }
 
 output "project_dirs" {

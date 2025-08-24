@@ -1,2 +1,6 @@
 # 000-Filesystem-Orchestrator
-implement a terraform module that creates a “workspace” on your filesystem and create a script to generates metadata. 
+
+Glossary:
+
+`workspace`: this is the root, the place where your projects will live
+`project`: this is the project itself, what is inside the workspace

@@ -1,8 +1,12 @@
 terraform {
   required_version = "${terraform_version}"
-  
+
   required_providers {
     # Add your required providers here
+    null = {
+      source  = "hashicorp/null"
+      version = "3.2.4"
+    }
   }
 }
 

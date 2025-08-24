@@ -1,20 +1,20 @@
-variable "workspace_name" {
-  description = "Name of the workspace to create"
+variable "project_name" {
+  description = "Name of the project to create"
   type        = string
 
   validation {
-    condition     = length(var.workspace_name) > 0 && length(var.workspace_name) <= 64
+    condition     = length(var.project_name) > 0 && length(var.project_name) <= 64
     error_message = "The name of the workspace must be between 1 and 64 charactesr."
   }
 }
 
-variable "base_path" {
+variable "workspace_path" {
   description = "Base path where the workspace will be created"
   type        = string
   default     = "./workspaces"
 
   validation {
-    condition     = length(var.base_path) > 0
+    condition     = length(var.workspace_path) > 0
     error_message = "Base path cannot be empty"
   }
 }
@@ -66,6 +66,18 @@ variable "extra_vars" {
   description = "Extra variables for the templates"
   type        = map(string)
   default     = {}
+}
+
+variable "common" {
+  description = "Enables the common module"
+  type        = bool
+  default     = false
+}
+
+variable "workspace_master" {
+  description = "This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level"
+  type        = bool
+  default     = false
 }
 
 variable "terraform_version" {

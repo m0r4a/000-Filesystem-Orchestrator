@@ -1,4 +1,4 @@
-# Ansible Inventory for ${workspace_name}
+# Ansible Inventory for ${project_name}
 # Generated on: ${created_at}
 
 [${environment}]
@@ -9,7 +9,7 @@
 # prod-db-01  ansible_host=10.0.2.10
 
 [${environment}:vars]
-project_name=${workspace_name}
+project_name=${project_name}
 environment=${environment}
 project_type=${project_type}
 %{ if created_by != "" ~}

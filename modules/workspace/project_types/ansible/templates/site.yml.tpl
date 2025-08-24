@@ -1,8 +1,8 @@
 ---
-- name: ${workspace_name} Deployment Playbook
+- name: ${project_name} Deployment Playbook
   become: true
   vars:
-    project_name: "${workspace_name}"
+    project_name: "${project_name}"
     environment: "${environment}"
     project_type: "${project_type}"
     deployment_date: "${created_at}"

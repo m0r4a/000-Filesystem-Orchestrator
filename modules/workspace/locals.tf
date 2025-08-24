@@ -1,11 +1,11 @@
 locals {
-  workspace_name_normalized = replace(lower(var.workspace_name), "/[^a-z0-9/]", "-")
+  project_name_normalized = replace(lower(var.project_name), "/[^a-z0-9/]", "-")
 
-  workspace_path = "${var.base_path}/${local.workspace_name_normalized}"
+  project_path = "${var.workspace_path}/${local.project_name_normalized}"
 
-  workspace_metadata = {
-    workspace_name = var.workspace_name
-    workspace_path = local.workspace_path
+  project_metadata = {
+    project_name   = var.project_name
+    workspace_path = var.workspace_path
 
     created_at = timestamp()
     created_by = var.created_by
@@ -26,5 +26,5 @@ locals {
   # project_dirs is on project_types
   all_directories = distinct(concat(local.project_dirs, var.extra_dirs))
 
-  directory_paths = [for dir in local.all_directories : "${local.workspace_path}/${dir}"]
+  directory_paths = [for dir in local.all_directories : "${local.project_path}/${dir}"]
 }

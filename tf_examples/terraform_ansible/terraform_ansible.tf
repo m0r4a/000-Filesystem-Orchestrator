@@ -11,8 +11,8 @@ terraform {
 module "example_terraform" {
   source = "../../modules/workspace"
 
-  workspace_name = "Terraform"
-  base_path      = "../../workdir_example"
+  project_name   = "Terraform"
+  workspace_path = "../../workdir_example"
 
   created_by   = "A nice user"
   description  = "This is a classic example of a project that uses Terraform + Ansible"
@@ -35,8 +35,8 @@ module "example_terraform" {
 module "example_ansible" {
   source = "../../modules/workspace"
 
-  workspace_name = "Ansible"
-  base_path      = "../../workdir_example"
+  project_name   = "Ansible"
+  workspace_path = "../../workdir_example"
 
   created_by   = "A nice user"
   description  = "This is a classic example of a project that uses Terraform + Ansible"

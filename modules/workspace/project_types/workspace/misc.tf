@@ -2,8 +2,8 @@ terraform {
   required_version = ">= 1.12"
 }
 
-variable "project_path" {
-  description = "The project path"
+variable "workspace_path" {
+  description = "The workspace path"
   type        = string
 }
 
@@ -19,7 +19,7 @@ variable "project_metadata" {
 }
 
 output "templates" {
-  value = local.templates
+  value = local.workspace_templates
 }
 
 output "project_dirs" {

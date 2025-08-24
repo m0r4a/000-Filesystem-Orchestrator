@@ -1,4 +1,4 @@
-# ${workspace_name}
+# ${project_name}
 
 ## This is an example .md
 

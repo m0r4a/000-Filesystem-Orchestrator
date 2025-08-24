@@ -15,12 +15,12 @@ locals {
 
   templates = var.create_templates ? {
     site = {
-      path    = "${var.workspace_path}/site.yml"
-      content = templatefile("${path.module}/templates/site.yml.tpl", var.workspace_metadata)
+      path    = "${var.project_path}/site.yml"
+      content = templatefile("${path.module}/templates/site.yml.tpl", var.project_metadata)
     }
     production_inventory = {
-      path    = "${var.workspace_path}/production/inventory.ini"
-      content = templatefile("${path.module}/templates/inventory.ini.tpl", var.workspace_metadata)
+      path    = "${var.project_path}/production/inventory.ini"
+      content = templatefile("${path.module}/templates/inventory.ini.tpl", var.project_metadata)
     }
   } : {}
 
