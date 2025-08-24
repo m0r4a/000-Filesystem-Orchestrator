@@ -1,5 +1,5 @@
 terraform {
-  required_version = "${terraform_version}"
+  required_version = ">= 1.6.0"
 
   required_providers {
     # Add your required providers here

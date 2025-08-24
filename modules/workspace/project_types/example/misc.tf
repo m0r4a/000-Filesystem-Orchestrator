@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.12"
+  required_version = ">= 1.6.0"
 }
 
 variable "project_path" {
@@ -18,8 +18,8 @@ variable "project_metadata" {
   type        = any
 }
 
-variable "extra_vars" {
-  description = "Extra variables dictionary"
+variable "template_vars" {
+  description = "Template variables map"
   type        = map(string)
 }
 

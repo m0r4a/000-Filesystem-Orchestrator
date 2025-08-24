@@ -1,4 +1,4 @@
-# Outputs for ${project_name}
+# Outputs for ${meta_project_name}
 
 output "project_info" {
   description = "Project information"

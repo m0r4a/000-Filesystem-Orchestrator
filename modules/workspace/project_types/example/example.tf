@@ -11,7 +11,7 @@ locals {
       path = "${var.project_path}/example1.md"
       content = templatefile("${path.module}/templates/example1.md.tpl", merge(
         var.project_metadata,
-        var.extra_vars
+        var.template_vars
       ))
     }
 
@@ -23,7 +23,7 @@ locals {
       path = "${var.project_path}/example2.yaml"
       content = templatefile("${path.module}/templates/example2.yaml.tpl", {
         project_metadata = var.project_metadata
-        extra_vars       = var.extra_vars
+        extra_vars       = var.template_vars
       })
     }
 

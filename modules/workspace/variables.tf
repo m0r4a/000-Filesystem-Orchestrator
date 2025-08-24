@@ -62,8 +62,8 @@ variable "extra_dirs" {
   }
 }
 
-variable "extra_vars" {
-  description = "Extra variables for the templates"
+variable "template_vars" {
+  description = "Variables for the templates"
   type        = map(string)
   default     = {}
 }
@@ -76,6 +76,12 @@ variable "common" {
 
 variable "workspace_master" {
   description = "This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level"
+  type        = bool
+  default     = false
+}
+
+variable "version_control" {
+  description = "This determines whether you want to use version control in your projects or not"
   type        = bool
   default     = false
 }

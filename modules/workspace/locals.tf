@@ -4,20 +4,18 @@ locals {
   project_path = "${var.workspace_path}/${local.project_name_normalized}"
 
   project_metadata = {
-    project_name   = var.project_name
-    workspace_path = var.workspace_path
+    meta_project_name   = var.project_name
+    meta_workspace_path = var.workspace_path
 
-    created_at = timestamp()
-    created_by = var.created_by
+    meta_created_by = var.created_by
 
-    project_type = var.project_type
-    environment  = var.environment
-    tags         = var.tags
+    meta_project_type = var.project_type
+    meta_environment  = var.environment
 
-    terraform_version = var.terraform_version
-    description       = var.description
+    meta_description       = var.description
+    meta_tags         = var.tags
 
-    workspace_module = {
+    meta_workspace_module = {
       version = "0.0.2"
       source  = path.module
     }

@@ -1,8 +1,8 @@
 project_info:
-  name: ${project_metadata.project_name}
-  created_by: ${project_metadata.created_by}
-  environment: ${project_metadata.environment}
-  type: ${project_metadata.project_type}
+  name: ${project_metadata.meta_project_name}
+  created_by: ${project_metadata.meta_created_by}
+  environment: ${project_metadata.meta_environment}
+  type: ${project_metadata.meta_project_type}
 
 # Extra variables
 custom_config:
@@ -12,8 +12,5 @@ custom_config:
 
 # Mixed usage example
 deployment:
-  project: ${project_metadata.project_name}
-  target: ${project_metadata.environment}
-%{ if lookup(extra_vars, "deploy_version", "") != "" ~}
-  version: ${extra_vars.deploy_version}
-%{ endif ~}
+  project: ${project_metadata.meta_project_name}
+  target: ${project_metadata.meta_environment}

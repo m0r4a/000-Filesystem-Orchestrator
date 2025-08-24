@@ -12,6 +12,7 @@ module "common" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
+  template_vars = var.template_vars
 }
 
 module "workspace" {
@@ -19,6 +20,7 @@ module "workspace" {
   workspace_path   = var.workspace_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
+  template_vars = var.template_vars
 }
 
 module "example_project" {
@@ -27,7 +29,7 @@ module "example_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  extra_vars       = var.extra_vars
+  template_vars = var.template_vars
 }
 
 module "terraform_project" {
@@ -36,6 +38,7 @@ module "terraform_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
+  template_vars = var.template_vars
 }
 
 module "ansible_project" {
@@ -44,6 +47,7 @@ module "ansible_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
+  template_vars = var.template_vars
 }
 
 locals {
@@ -62,7 +66,7 @@ locals {
     local.selected_module != null ? local.selected_module.templates : {}
   )
 
-  # Concatenate project dirs: git + common (if enabled) + selected type
+  # Concatenate project dirs: workspace + common (if enabled) + selected type
   project_dirs = concat(
     var.workspace_master == true ? module.workspace.project_dirs : [],
     local.common_module != null ? local.common_module.project_dirs : [],

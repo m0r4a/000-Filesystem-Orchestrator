@@ -1,0 +1,46 @@
+#!/bin/bash
+
+WORKSPACE_PATH="$1"
+NEW_VERSION="$2"
+
+# Load the .versions
+VERSIONS_FILE="${WORKSPACE_PATH}/.versions"
+if [[ ! -f "$VERSIONS_FILE" ]]; then
+  echo ".versions not found in $WORKSPACE_PATH"
+  exit 1
+fi
+
+# Get list of versions and hashes
+declare -A versions_map
+while IFS="\": \"" read -r key val; do
+  key=$(echo $key | tr -d '"{} ')
+  val=$(echo $val | tr -d '"{}, ')
+  if [[ -n "$key" ]]; then
+    versions_map[$key]=$val
+  fi
+done < <(jq -r '.versions | to_entries[] | "\(.key): \(.value)"' "$VERSIONS_FILE")
+
+# Check if previous versions exist
+sorted_keys=($(printf "%s\n" "${!versions_map[@]}" | sort))
+last_version="${sorted_keys[-1]}"
+last_hash="${versions_map[$last_version]}"
+
+# Directorios fuente y destino para diff
+PROJECT_DIR="${WORKSPACE_PATH}"
+# Para comparar, podríamos usar una copia del estado previo; aquí asumimos que hay un respaldo con nombre basado en hash:
+PREV_DIR="${WORKSPACE_PATH}/.prev_states/${last_hash}"
+CURRENT_DIR="${PROJECT_DIR}"
+
+# Si no existe respaldo previo, la comparación será contra un directorio vacío
+if [[ ! -d "$PREV_DIR" ]]; then
+  mkdir -p "$PREV_DIR"
+fi
+
+# Generar diff unificado entre el estado previo y el actual
+DIFF_FILE="${WORKSPACE_PATH}/versions/${NEW_VERSION}.diff"
+diff -Nur "$PREV_DIR" "$CURRENT_DIR" > "$DIFF_FILE"
+
+# Opcional: actualizar el respaldo para el nuevo estado
+# (por ejemplo, copiando el contenido actual a .prev_states/$current_hash)
+NEW_HASH=$(echo "${versions_map[$NEW_VERSION]}")
+# Esto requiere de la implementación real de respaldo, no detallado aquí

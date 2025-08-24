@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.12"
+  required_version = ">= 1.6.0"
 }
 
 variable "workspace_path" {
@@ -16,6 +16,11 @@ variable "create_templates" {
 variable "project_metadata" {
   description = "Pretty straightforward"
   type        = any
+}
+
+variable "template_vars" {
+  description = "Template variables map"
+  type        = map(string)
 }
 
 output "templates" {

@@ -1,15 +1,7 @@
 # 000-Filesystem-Orchestrator
 
 ## TODOs after reading the new butterdocs thingy
-- extra_dirs on example:  docs, data, scripts and metadata
-- outputs:
-  - final workspace path
-  - list of created files
-- pinning: Ox's example of pinning is way prettier
-- Change pinned versions:
-  - terraform: >= 1.6.0
-  - local: ~> 2.5
-  - null: ~> 2.3
+
 
 ### Checksums
 
@@ -34,6 +26,11 @@ Maybe that's what Ox meant by “version history”? Terraform applies and loggi
 metadata.json vs seed.json
 
 Maybe seed.json can be a checksum for all currently created files? like the baseline type thing
+
+#### Edits
+
+- .seed.json: now it's static, created once and never again
+- .medatata.json: it's static to, also used to pass variables for the templates
 
 
 ## Differences

@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+    echo "Usage: $0 <path>"
+    echo "  path: Directory or file path to process"
+    exit 1
+}
+
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+check_dependencies() {
+    local commands=("/usr/bin/find" "/usr/bin/sort" "/bin/cat" "/usr/bin/sha256sum" "/usr/bin/cut")
+    
+    for cmd in "${commands[@]}"; do
+        [[ -x "$cmd" ]] || error_exit "Required command not found or not executable: $cmd"
+    done
+}
+
+process_path() {
+    local target_path="$1"
+    local temp_file
+    
+    # In this temp file the data will be acumulated
+    temp_file=$(/bin/mktemp) || error_exit "Failed to create temporary file"
+    
+    # This forces to remove the tempfile when exiting the program
+    trap "/bin/rm -f '$temp_file'" EXIT
+    
+    # Gets all the files and dirs and they are sorted after, this may increase a lot the
+    # resources needed for the script but ensures that the hash will be the same
+
+    # Removing the .versions.json is very important, otherwise, when version_control = true
+    # since the hash is updated in the file, the hash of the metadata file will always be different.
+    local items
+    items=$(/usr/bin/find "$target_path" -type f -not -name ".versions.json" -o -type d | /usr/bin/sort) || error_exit "Failed to enumerate items in path: $target_path"
+
+    
+    while IFS= read -r item; do
+        [[ -n "$item" ]] || continue
+        
+        # Get the path of the item
+        echo "PATH:$item" >> "$temp_file" || error_exit "Failed to write to temporary file"
+        
+        # If file then get item's content basically
+        if [[ -f "$item" ]]; then
+            echo "CONTENT:" >> "$temp_file" || error_exit "Failed to write content marker"
+            if ! /bin/cat "$item" >> "$temp_file" 2>/dev/null; then
+                echo "WARNING: Could not read file content: $item" >&2
+                echo "UNREADABLE_FILE" >> "$temp_file"
+            fi
+            echo "" >> "$temp_file" || error_exit "Failed to write newline separator"
+        fi
+        
+    done <<< "$items"
+    
+    local final_hash
+    final_hash=$(/usr/bin/sha256sum "$temp_file" | /usr/bin/cut -d' ' -f1) || error_exit "Failed to generate hash"
+    
+    echo "$final_hash"
+}
+
+main() {
+    # Doing the checks first to comply with the "fail fast" requirement
+    [[ $# -eq 1 ]] || usage
+    
+    local input_path="$1"
+    
+    check_dependencies
+    
+    [[ -e "$input_path" ]] || error_exit "Path does not exist: $input_path"
+    [[ -r "$input_path" ]] || error_exit "Path is not readable: $input_path"
+  
+    local result_hash
+    result_hash=$(process_path "$input_path") || error_exit "Failed to process path: $input_path"
+
+    echo "{\"hash\":\"$result_hash\"}"    
+}
+
+main "$@"

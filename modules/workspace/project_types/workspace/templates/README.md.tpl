@@ -1,15 +1,14 @@
-# ${project_name}
+# ${meta_project_name}
 
 ## TODO: Improve this
 
-${description != "" ? description : "Generated workspace for ${project_type} project"}
+${meta_description != "" ? meta_description : "Generated workspace for ${meta_project_type} project"}
 
 ## Workspace Information
 
-- **Creation date**: ${created_at}
-- **Created By**: ${created_by != "" ? created_by : "Terraform Workspace Module"}
-- **Environment**: ${environment}
-- **Project Type**: ${project_type}
+- **Created By**: ${meta_created_by != "" ? meta_created_by : "Terraform Workspace Module"}
+- **Environment**: ${meta_environment}
+- **Project Type**: ${meta_project_type}
 
 ## Getting Started
 

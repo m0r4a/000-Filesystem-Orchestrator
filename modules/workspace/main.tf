@@ -26,7 +26,25 @@ resource "local_file" "templates" {
   depends_on = [null_resource.create_directories]
 }
 
-resource "local_file" "metadata" {
+# default permissions are 731 for some reason
+resource "null_resource" "set_permissions" {
+  provisioner "local-exec" {
+    command = <<-EOT
+     find '${var.workspace_path}' -type d -exec chmod 755 {} \;
+     find '${var.workspace_path}' -type f -exec chmod 644 {} \;
+     if [ -d '${local.project_path}/scripts' ]; then
+       find '${local.project_path}/scripts' -type f -exec chmod u+x {} \;
+     fi
+     if [ -d '${var.workspace_path}/scripts' ]; then
+       find '${var.workspace_path}/scripts' -type f -exec chmod u+x {} \;
+     fi
+   EOT
+  }
+
+  depends_on = [local_file.templates]
+}
+
+resource "local_file" "project_metadata" {
   filename = "${local.project_path}/.metadata.json"
 
   content = jsonencode({
@@ -35,20 +53,30 @@ resource "local_file" "metadata" {
     files_created = keys(local.template_files)
   })
 
-  depends_on = [local_file.templates]
-}
-
-# default permissions are 731 for some reason
-resource "null_resource" "set_permissions" {
-  provisioner "local-exec" {
-    command = <<-EOT
-      find '${var.workspace_path}' -type d -exec chmod 755 {} \;
-      find '${var.workspace_path}' -type f -exec chmod 644 {} \;
-      if [ -d '${local.project_path}/scripts' ]; then
-        find '${local.project_path}/scripts' -name "*.sh" -exec chmod +x {} \;
-      fi
-    EOT
+  lifecycle {
+    ignore_changes = [content]
   }
 
-  depends_on = [local_file.metadata]
+  depends_on = [null_resource.set_permissions]
+}
+
+data "external" "seed_workspace_hash" {
+  count = var.workspace_master ? 1 : 0
+
+  program = ["${var.workspace_path}/scripts/checksum", "${var.workspace_path}"]
+
+  depends_on = [null_resource.set_permissions]
+}
+
+resource "local_file" "workspace_seed" {
+  filename = "${var.workspace_path}/.seed.json"
+  content = jsonencode({
+    seed = var.workspace_master ? data.external.seed_workspace_hash[0].result.hash : "a workspace master is needed for calculating the hashes"
+  })
+
+  lifecycle {
+    ignore_changes = [content]
+  }
+
+  depends_on = [data.external.seed_workspace_hash]
 }
