@@ -8,11 +8,12 @@ terraform {
   }
 }
 
-module "testing" {
-  source = "./modules/workspace"
+module "example" {
+  source = "../../modules/workspace"
 
   workspace_name = "example_workspace"
-  base_path      = "../example_workdir"
+  base_path      = "../../workdir_example"
+
 
   created_by   = "A nice user"
   description  = "This works as a guideline for how you can implement a new project type"

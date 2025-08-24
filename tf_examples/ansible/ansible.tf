@@ -8,11 +8,11 @@ terraform {
   }
 }
 
-module "ansible_workspace" {
-  source = "./modules/workspace"
+module "example" {
+  source = "../../modules/workspace"
 
   workspace_name = "Ansible"
-  base_path      = "../example_workdir"
+  base_path      = "../../workdir_example"
 
   created_by   = "A nice user"
   description  = "This is just an ansible structure"

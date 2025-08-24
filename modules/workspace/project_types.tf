@@ -9,7 +9,7 @@ locals {
 module "base_project" {
   source = "./project_types/base"
 
-  base_path     = var.base_path
+  base_path          = var.base_path
   create_templates   = var.create_templates
   workspace_metadata = local.workspace_metadata
 }
@@ -40,7 +40,6 @@ module "ansible_project" {
   workspace_path     = local.workspace_path
   create_templates   = var.create_templates
   workspace_metadata = local.workspace_metadata
-  extra_vars         = var.extra_vars
 }
 
 

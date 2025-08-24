@@ -1,23 +1,3 @@
-variable "workspace_path" {
-  description = "The workspace path"
-  type        = string
-}
-
-variable "create_templates" {
-  description = "Weather to create template files based on project type"
-  type        = bool
-}
-
-variable "workspace_metadata" {
-  description = "Pretty straightforward"
-  type        = any
-}
-
-variable "extra_vars" {
-  description = "Extra variables dictionary"
-  type        = map(string)
-}
-
 locals {
   # This dirs are based on: https://docs.ansible.com/ansible/2.8/user_guide/playbooks_best_practices.html#directory-layout
   project_dirs = [
@@ -44,12 +24,4 @@ locals {
     }
   } : {}
 
-}
-
-output "templates" {
-  value = local.templates
-}
-
-output "project_dirs" {
-  value = local.project_dirs
 }
