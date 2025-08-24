@@ -4,7 +4,7 @@ locals {
   existing_versions = local.metadata_exists ? try(jsondecode(file("${var.workspace_path}/.versions.json")).versions, {}) : {}
 
   current_hash = var.workspace_master ? data.external.workspace_hash[0].result.hash : "a workspace master is needed for calculating the hashes"
-  next_version = format("version_%06d", length(local.existing_versions) + 1)
+  next_version = format("version_%05d", length(local.existing_versions) + 1)
   hash_exists  = contains(values(local.existing_versions), local.current_hash)
 
   should_add_version = var.version_control && var.workspace_master && !local.hash_exists
@@ -18,7 +18,7 @@ data "external" "workspace_hash" {
   count      = var.workspace_master ? 1 : 0
   program    = ["${var.workspace_path}/scripts/checksum", "${var.workspace_path}"]
 
-  depends_on = [null_resource.set_permissions]
+  depends_on = [local_file.workspace_seed]
 }
 
 resource "local_file" "project_metadata_versioned" {
