@@ -1,4 +1,7 @@
-## Modules
+
+## Module content
+
+### Modules
 
 | Name | Source | Description |
 |------|--------|-------------|
@@ -8,7 +11,10 @@
 | <a name="module_terraform_project"></a> [terraform\_project](#module\_terraform\_project) | ./project_types/terraform | Contains very basic files for a Terraform project |
 | <a name="module_ansible_project"></a> [ansible\_project](#module\_ansible\_project) | ./project_types/ansible | Contains the directory structure recommended by its documentation |
 
-## Inputs
+> [!NOTE]
+> The modules under the workspace modules are refeered as `project_types` in the documentation
+
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -18,21 +24,24 @@
 | <a name="input_description"></a> [description](#input\_description) | Description of the workspace purpose | `string` | `""` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Type of environment (dev, prod, etc.) | `string` | `"dev"` | no |
 | <a name="input_extra_dirs"></a> [extra\_dirs](#input\_extra\_dirs) | Extra directories to create in the workspace | `list(string)` | `[]` | no |
-| <a name="input_extra_vars"></a> [extra\_vars](#input\_extra\_vars) | Extra variables for the templates | `map(string)` | `{}` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Name of the project to create | `string` | n/a | yes |
 | <a name="input_project_type"></a> [project\_type](#input\_project\_type) | The type of project you want to create | `string` | `"base"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to associate with the workspace | `map(string)` | `{}` | no |
+| <a name="input_template_vars"></a> [template\_vars](#input\_template\_vars) | Variables for the templates | `map(string)` | `{}` | no |
 | <a name="input_terraform_version"></a> [terraform\_version](#input\_terraform\_version) | Terraform version for projects | `string` | `">= 1.12"` | no |
+| <a name="input_version_control"></a> [version\_control](#input\_version\_control) | This determines whether you want to use version control in your projects or not | `bool` | `false` | no |
 | <a name="input_workspace_master"></a> [workspace\_master](#input\_workspace\_master) | This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level | `bool` | `false` | no |
 | <a name="input_workspace_path"></a> [workspace\_path](#input\_workspace\_path) | Base path where the workspace will be created | `string` | `"./workspaces"` | no |
+
 
 > [!IMPORTANT]
 > - Only one project should have `workspace_master = true` unexpected behavior may occur otherwise.
 > - If no project has `workspace_master = true`, the `workspace` module will not be used.
+> - `version_control = true` depends on having a `workspace_master`.
 > - Only projects with `common = true` will use the `common` module.
 > - The `common` module uses metadata specific to each project.
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
@@ -42,3 +51,40 @@
 | <a name="output_project_name"></a> [project\_name](#output\_project\_name) | Project name used |
 | <a name="output_template_files_created"></a> [template\_files\_created](#output\_template\_files\_created) | Template files created |
 | <a name="output_workspace_path"></a> [workspace\_path](#output\_workspace\_path) | Full path of the created workspace |
+
+## How to create your own project type
+
+1. Go into the `project_types` folder under the module and copy the `example` project type
+
+```bash
+cp -r example ./my_project_type
+```
+
+2. Rename the `example.tf` file inside your new folder to match your project type:
+
+```bash
+mv example.tf my_project_type.tf
+```
+
+3. Modify it to your needs:
+
+- `project_dirs`: these are the directories your project will have at creation time
+
+- `templates`: if `create_templates = true`, these are the templates that will be used in the project
+
+  - There are 3 examples of how to pass variables, read the comments in the file for details
+
+4. Add your project_type
+
+- Open `project_types.tf`
+
+- Copy and paste the `example_project` module
+
+- Edit the `source` of the module to point to your new project type
+
+- Add your newly created module to the `available_modules {}` block
+
+5. And that's it, you shoud have your own `project_type`
+
+> [!NOTE]
+> Remember to add any templates you create to the module’s .tf file. Otherwise, they will not be used.

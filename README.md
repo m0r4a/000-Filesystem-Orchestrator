@@ -1,14 +1,6 @@
 # 000-Filesystem-Orchestrator
 
 
-### Checksums
-
-Maybe that's what Ox meant by “version history”? Terraform applies and logging the checksums of the differences?
-
-metadata.json vs seed.json
-
-Maybe seed.json can be a checksum for all currently created files? like the baseline type thing
-
 #### Edits
 
 - .seed.json: now it's static, created once and never again
