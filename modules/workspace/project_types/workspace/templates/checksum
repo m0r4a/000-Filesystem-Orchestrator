@@ -37,8 +37,7 @@ process_path() {
     # Removing the .versions.json is very important, otherwise, when version_control = true
     # since the hash is updated in the file, the hash of the metadata file will always be different.
     local items
-    items=$(/usr/bin/find "$target_path" -type f -not -name ".versions.json" -o -type d | /usr/bin/sort) || error_exit "Failed to enumerate items in path: $target_path"
-
+    items=$(/usr/bin/find "$target_path" -type f -not -name ".versions.json" -not -name ".metadata.json" -o -type d | /usr/bin/sort) || error_exit "Failed to enumerate items in path: $target_path"
     
     while IFS= read -r item; do
         [[ -n "$item" ]] || continue

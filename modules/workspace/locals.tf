@@ -8,6 +8,7 @@ locals {
     meta_workspace_path = var.workspace_path
 
     meta_created_by = var.created_by
+    meta_created_at = formatdate("YYYY-MM-DD hh:mm:ss", timestamp())
 
     meta_project_type = var.project_type
     meta_environment  = var.environment
