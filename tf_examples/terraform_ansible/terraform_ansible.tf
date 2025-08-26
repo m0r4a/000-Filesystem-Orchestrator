@@ -20,7 +20,6 @@ module "example_terraform" {
   project_type = "terraform"
   environment  = "dev"
 
-  terraform_version = ">= 1.5"
   create_templates  = true
 
   extra_dirs = [
@@ -44,7 +43,6 @@ module "example_ansible" {
   project_type = "ansible"
   environment  = "dev"
 
-  terraform_version = ">= 1.5"
   create_templates  = true
 
   extra_dirs = [

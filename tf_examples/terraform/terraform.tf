@@ -19,7 +19,6 @@ module "example" {
   project_type = "terraform"
   environment  = "dev"
 
-  terraform_version = ">= 1.5"
   create_templates  = true
 
   extra_dirs = [

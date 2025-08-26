@@ -35,9 +35,8 @@
 | <a name="input_extra_dirs"></a> [extra\_dirs](#input\_extra\_dirs) | Extra directories to create in the workspace | `list(string)` | `[]` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Name of the project to create | `string` | n/a | yes |
 | <a name="input_project_type"></a> [project\_type](#input\_project\_type) | The type of project you want to create | `string` | `"base"` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to associate with the workspace | `map(string)` | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to associate with the project | `map(string)` | `{}` | no |
 | <a name="input_template_vars"></a> [template\_vars](#input\_template\_vars) | Variables for the templates | `map(string)` | `{}` | no |
-| <a name="input_terraform_version"></a> [terraform\_version](#input\_terraform\_version) | Terraform version for projects | `string` | `">= 1.6.0"` | no |
 | <a name="input_version_control"></a> [version\_control](#input\_version\_control) | This determines whether you want to use version control in your projects or not | `bool` | `false` | no |
 | <a name="input_workspace_master"></a> [workspace\_master](#input\_workspace\_master) | This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level | `bool` | `false` | no |
 | <a name="input_workspace_path"></a> [workspace\_path](#input\_workspace\_path) | Base path where the workspace will be created | `string` | `"./workspaces"` | no |

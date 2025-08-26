@@ -91,12 +91,6 @@ variable "version_control" {
   default     = false
 }
 
-variable "terraform_version" {
-  description = "Terraform version for projects"
-  type        = string
-  default     = ">= 1.6.0"
-}
-
 variable "create_templates" {
   description = "Weather to create template files based on project type"
   type        = bool
@@ -104,7 +98,7 @@ variable "create_templates" {
 }
 
 variable "tags" {
-  description = "Tags to associate with the workspace"
+  description = "Tags to associate with the project"
   type        = map(string)
   default     = {}
 

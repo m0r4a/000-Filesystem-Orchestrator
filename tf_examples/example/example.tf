@@ -19,7 +19,6 @@ module "example_1" {
   description = "This works as a guideline for how you can implement a new project type"
   environment = "dev"
 
-  terraform_version = ">= 1.5"
   create_templates  = true
   common            = true
   workspace_master  = true
@@ -50,7 +49,6 @@ module "example_2" {
   description = "This is another project"
   environment = "dev"
 
-  terraform_version = ">= 1.5"
   create_templates  = true
   common            = true
   workspace_master  = true
