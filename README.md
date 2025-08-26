@@ -18,7 +18,6 @@ This Terraform module allows you to create and manage structured workspaces with
 - [Advanced Usage](#advanced-usage)
 - [Project Structure](#project-structure)
 - [Documentation](#documentation)
-- [Contributing](#contributing)
 
 ## Features
 
