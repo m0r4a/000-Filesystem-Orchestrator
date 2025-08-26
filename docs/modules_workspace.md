@@ -1,3 +1,5 @@
+TODO: document the workspace_tree or whatever variable in the table
+
 ## Module Flow
 
 <p align="center">
@@ -45,7 +47,6 @@
 > [!IMPORTANT]
 > - Only one project should have `workspace_master = true` unexpected behavior may occur otherwise.
 > - If no project has `workspace_master = true`, the `workspace` module will not be used.
-> - `version_control = true` depends on having a `workspace_master`.
 > - Only projects with `common = true` will use the `common` module.
 > - The `common` module uses metadata specific to each project.
 
@@ -58,7 +59,10 @@
 | <a name="output_metadata_file_path"></a> [metadata\_file\_path](#output\_metadata\_file\_path) | Path to the workspace metadata |
 | <a name="output_project_name"></a> [project\_name](#output\_project\_name) | Project name used |
 | <a name="output_template_files_created"></a> [template\_files\_created](#output\_template\_files\_created) | Template files created |
+| <a name="output_workspace_path"></a> [workspace\_path](#output\_workspace\_path) | Shows all the files in the workspace |
 | <a name="output_workspace_path"></a> [workspace\_path](#output\_workspace\_path) | Full path of the created workspace |
+
+> `workspace_files` depends `workspace_master = true`, if it does not exist then it will print an empty value.
 
 ## How to create your own project type
 
@@ -96,3 +100,7 @@ mv example.tf my_project_type.tf
 
 > [!NOTE]
 > Remember to add any templates you create to the module’s .tf file. Otherwise, they will not be used.
+
+## Known issues with more than one `workspace_master = true`
+
+- Causes version control to create a new version on the second run, from that point on it remains consistent

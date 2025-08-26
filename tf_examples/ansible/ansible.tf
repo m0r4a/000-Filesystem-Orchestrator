@@ -19,7 +19,7 @@ module "example" {
   project_type = "ansible"
   environment  = "dev"
 
-  create_templates  = true
+  create_templates = true
 
   extra_dirs = [
     "superprod_inv"

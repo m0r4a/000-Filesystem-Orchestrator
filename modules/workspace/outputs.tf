@@ -28,3 +28,8 @@ output "template_files_created" {
   description = "Template files created"
   value       = { for k, v in local.template_files : k => v.path }
 }
+
+output "workspace_files" {
+  description = "Tree of workspace files"
+  value       = var.workspace_master ? data.external.workspace_files[0].result : null
+}

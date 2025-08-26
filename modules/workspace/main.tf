@@ -60,23 +60,22 @@ resource "local_file" "project_metadata" {
   depends_on = [null_resource.set_permissions]
 }
 
-data "external" "seed_workspace_hash" {
-  count = var.workspace_master ? 1 : 0
-
-  program = ["${var.workspace_path}/scripts/checksum", "${var.workspace_path}"]
+resource "null_resource" "workspace_seed" {
+  # Since this thing is ran multiple times, each time per project
+  # I can't use triggers, to decide if something occurs or not
+  provisioner "local-exec" {
+    command = <<-EOT
+      if [ ! -f "${var.workspace_path}/.seed.json" ]; then
+        ${path.module}/scripts/checksum ${var.workspace_path} > ${var.workspace_path}/.seed.json
+      fi
+    EOT
+  }
 
   depends_on = [null_resource.set_permissions]
 }
 
-resource "local_file" "workspace_seed" {
-  filename = "${var.workspace_path}/.seed.json"
-  content = jsonencode({
-    seed = var.workspace_master ? data.external.seed_workspace_hash[0].result.hash : "a workspace master is needed for calculating the hashes"
-  })
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-
-  depends_on = [data.external.seed_workspace_hash]
+data "external" "workspace_files" {
+  count      = var.workspace_master ? 1 : 0
+  program    = ["${path.module}/scripts/workspace_files", "${var.workspace_path}"]
+  depends_on = [null_resource.workspace_seed]
 }

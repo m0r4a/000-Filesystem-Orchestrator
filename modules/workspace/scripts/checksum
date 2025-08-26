@@ -49,7 +49,7 @@ process_path() {
         if [[ -f "$item" ]]; then
             echo "CONTENT:" >> "$temp_file" || error_exit "Failed to write content marker"
             if ! /bin/cat "$item" >> "$temp_file" 2>/dev/null; then
-                echo "WARNING: Could not read file content: $item" >&2
+                echo "Could not read file content: $item" >&2
                 echo "UNREADABLE_FILE" >> "$temp_file"
             fi
             echo "" >> "$temp_file" || error_exit "Failed to write newline separator"

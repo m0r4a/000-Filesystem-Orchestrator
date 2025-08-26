@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+
+# This damn script is made to output the arrays in an organized way,
+# putting the loose files in the workspace, then a directory, the
+# files of that directory, and so on. But it doesn’t work that
+# well when used with Terraform for some reason,
+# so I’ll just leave it as files and that’s it.
+
+# this needs a rewire since the organization doesn't matter
+
+set -euo pipefail
+
+usage() {
+    echo "Usage: $0 <directory_path>"
+    echo "  directory_path: Must be an existing directory"
+    exit 1
+}
+
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+check_dependencies() {
+    local commands=(
+        "/usr/bin/find"
+        "/usr/bin/sort"
+        "/bin/readlink"
+        "/bin/sed"
+    )
+    for cmd in "${commands[@]}"; do
+        [[ -x "$cmd" ]] || error_exit "Required command not found or not executable: $cmd"
+    done
+}
+
+declare -a USED_KEYS=()
+declare -a ORDER=()
+declare -a VALUES=()
+
+escape_json() {
+    # Escape backslashes and quotes for JSON
+    echo -n "$1" | /bin/sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+make_key() {
+    # Build key from basename
+    local name="$1"
+    local key
+    if [[ "$name" == .* ]]; then
+        local rest="${name#.}"
+        if [[ "$rest" == *.* ]]; then
+            key=".${rest%%.*}"
+        else
+            key=".$rest"
+        fi
+    else
+        if [[ "$name" == *.* ]]; then
+            key="${name%%.*}"
+        else
+            key="$name"
+        fi
+    fi
+    echo "$key"
+}
+
+key_exists() {
+    local seek="$1"
+    for k in "${USED_KEYS[@]:-}"; do
+        [[ "$k" == "$seek" ]] && return 0
+    done
+    return 1
+}
+
+add_pair() {
+    local base_key="$1"
+    local val="$2"
+    local key="$base_key"
+
+    if key_exists "$key"; then
+        local n=2
+        while key_exists "${base_key}_$n"; do
+            n=$((n + 1))
+        done
+        key="${base_key}_$n"
+    fi
+
+    USED_KEYS+=("$key")
+    ORDER+=("$key")
+    VALUES+=("$val")
+}
+
+traverse() {
+    local current_rel="$1"
+    local abs_dir="$TARGET_PATH"
+    [[ "$current_rel" != "." ]] && abs_dir="$TARGET_PATH/$current_rel"
+
+    # files
+    if /usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\0' 2>/dev/null | /usr/bin/sort -z >/dev/null 2>&1; then
+        while IFS= read -r -d $'\0' fname; do
+            [[ -n "$fname" ]] || continue
+            local key_base relpath
+            key_base=$(make_key "$fname")
+            relpath=$([[ "$current_rel" == "." ]] && echo "$fname" || echo "$current_rel/$fname")
+            add_pair "$key_base" "$relpath"
+        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\0' | /usr/bin/sort -z)
+    else
+        while IFS= read -r fname; do
+            [[ -n "$fname" ]] || continue
+            local key_base relpath
+            key_base=$(make_key "$fname")
+            relpath=$([[ "$current_rel" == "." ]] && echo "$fname" || echo "$current_rel/$fname")
+            add_pair "$key_base" "$relpath"
+        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\n' | /usr/bin/sort)
+    fi
+
+    # Dirs
+    if /usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\0' 2>/dev/null | /usr/bin/sort -z >/dev/null 2>&1; then
+        while IFS= read -r -d $'\0' dname; do
+            [[ -n "$dname" ]] || continue
+            local key_base reldir
+            key_base=$(make_key "$dname")
+            reldir=$([[ "$current_rel" == "." ]] && echo "$dname" || echo "$current_rel/$dname")
+            add_pair "$key_base" "$reldir"
+            traverse "$reldir"
+        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\0' | /usr/bin/sort -z)
+    else
+        while IFS= read -r dname; do
+            [[ -n "$dname" ]] || continue
+            local key_base reldir
+            key_base=$(make_key "$dname")
+            reldir=$([[ "$current_rel" == "." ]] && echo "$dname" || echo "$current_rel/$dname")
+            add_pair "$key_base" "$reldir"
+            traverse "$reldir"
+        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\n' | /usr/bin/sort)
+    fi
+}
+
+main() {
+    [[ $# -eq 1 ]] || usage
+    check_dependencies
+
+    local input_path="$1"
+    [[ -d "$input_path" ]] || error_exit "Path does not exist or is not a directory: $input_path"
+
+    TARGET_PATH=$(/bin/readlink -f "$input_path")
+
+    traverse "."
+
+    if [[ ${#ORDER[@]} -eq 0 ]]; then
+        echo "{}"
+        exit 0
+    fi
+
+    local first=1
+    printf '{'
+    for ((i=0; i<${#ORDER[@]}; i++)); do
+        local k="${ORDER[$i]}"
+        local v="${VALUES[$i]}"
+        local esc_k esc_v
+        esc_k=$(escape_json "$k")
+        esc_v=$(escape_json "$v")
+
+        [[ $first -eq 1 ]] && first=0 || echo -n ","
+        echo -n $'\n  '
+        printf '"%s":"%s"' "$esc_k" "$esc_v"
+    done
+    echo
+    echo '}'
+}
+
+main "$@"

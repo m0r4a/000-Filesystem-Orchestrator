@@ -13,10 +13,6 @@ locals {
       path    = "${var.workspace_path}/.gitignore"
       content = file("${path.module}/templates/gitignore.tpl")
     }
-    checksums = {
-      path    = "${var.workspace_path}/scripts/checksum"
-      content = file("${path.module}/templates/checksum")
-    }
 
   } : {}
 

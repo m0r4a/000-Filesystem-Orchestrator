@@ -19,7 +19,7 @@ module "example" {
   project_type = "terraform"
   environment  = "dev"
 
-  create_templates  = true
+  create_templates = true
 
   extra_dirs = [
     "super_custom_dir"

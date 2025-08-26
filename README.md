@@ -118,7 +118,7 @@ workspace/
 
 ### Metadata Files
 
-- **`.seed.json`**: Cryptographic hash of workspace initial state for change detection
+- **`.seed.json`**: Hash of workspace's initial state for change detection
 - **`.metadata.json`**: Static file containing project name, type, creation date, creator, description, environment, and tags
 - **`.versions.json`**: Version tracking file maintaining history of workspace changes
 

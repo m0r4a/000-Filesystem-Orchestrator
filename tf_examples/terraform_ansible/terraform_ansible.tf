@@ -20,7 +20,7 @@ module "example_terraform" {
   project_type = "terraform"
   environment  = "dev"
 
-  create_templates  = true
+  create_templates = true
 
   extra_dirs = [
     "terraform_dir"
@@ -43,7 +43,7 @@ module "example_ansible" {
   project_type = "ansible"
   environment  = "dev"
 
-  create_templates  = true
+  create_templates = true
 
   extra_dirs = [
     "ansible_dir"
