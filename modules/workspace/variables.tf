@@ -11,7 +11,7 @@ variable "project_name" {
 variable "workspace_path" {
   description = "Base path where the workspace will be created"
   type        = string
-  default     = "./workspaces"
+  default     = "./workspace"
 
   validation {
     condition     = length(var.workspace_path) > 0

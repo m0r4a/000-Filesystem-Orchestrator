@@ -193,7 +193,7 @@ module "config" {
   project_type   = "ansible"
   common        = true
   
-  extra_dirs = "collections"]
+  extra_dirs = ["collections"]
 }
 ```
 
@@ -233,6 +233,8 @@ module "api_service" {
 - **Version Control**: Requires a workspace master to be enabled
 - **Common Templates**: Only projects with `common = true` receive shared templates
 - **Template Variables**: Available to projects with `create_templates = true`
+
+> Declare a variable and not using it does not cause any error, but if you try to use it without passing it, it will throw an error
 
 ## Project Structure
 
