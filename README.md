@@ -288,7 +288,3 @@ make examples-clean
 # Add your own project type
 cp -r modules/workspace/project_types/example modules/workspace/project_types/my_type
 ```
-
-## Extra
-
-- Maybe add a special variable for the workspace master to reduce the verbosity of the outputs?
