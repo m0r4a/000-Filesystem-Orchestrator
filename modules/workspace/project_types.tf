@@ -1,9 +1,19 @@
 locals {
   available_modules = {
+    base = module.base
     example   = module.example_project
     terraform = module.terraform_project
     ansible   = module.ansible_project
   }
+}
+
+module "base" {
+  count            = var.project_type == "base" ? 1 : 0
+  source           = "./project_types/base"
+  project_path     = local.project_path
+  create_templates = var.create_templates
+  project_metadata = local.project_metadata
+  template_vars    = var.template_vars
 }
 
 module "common" {
@@ -12,7 +22,7 @@ module "common" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  template_vars = var.template_vars
+  template_vars    = var.template_vars
 }
 
 module "workspace" {
@@ -20,7 +30,7 @@ module "workspace" {
   workspace_path   = var.workspace_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  template_vars = var.template_vars
+  template_vars    = var.template_vars
 }
 
 module "example_project" {
@@ -29,7 +39,7 @@ module "example_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  template_vars = var.template_vars
+  template_vars    = var.template_vars
 }
 
 module "terraform_project" {
@@ -38,7 +48,7 @@ module "terraform_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  template_vars = var.template_vars
+  template_vars    = var.template_vars
 }
 
 module "ansible_project" {
@@ -47,7 +57,7 @@ module "ansible_project" {
   project_path     = local.project_path
   create_templates = var.create_templates
   project_metadata = local.project_metadata
-  template_vars = var.template_vars
+  template_vars    = var.template_vars
 }
 
 locals {

@@ -15,8 +15,8 @@ locals {
 }
 
 data "external" "workspace_hash" {
-  count      = var.workspace_master ? 1 : 0
-  program    = ["${var.workspace_path}/scripts/checksum", "${var.workspace_path}"]
+  count   = var.workspace_master ? 1 : 0
+  program = ["${var.workspace_path}/scripts/checksum", "${var.workspace_path}"]
 
   depends_on = [local_file.workspace_seed]
 }
@@ -26,7 +26,7 @@ resource "local_file" "project_metadata_versioned" {
   filename = "${var.workspace_path}/.versions.json"
 
   content = jsonencode({
-    versions      = local.new_versions
+    versions = local.new_versions
   })
 
   depends_on = [data.external.workspace_hash]

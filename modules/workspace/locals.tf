@@ -13,8 +13,8 @@ locals {
     meta_project_type = var.project_type
     meta_environment  = var.environment
 
-    meta_description       = var.description
-    meta_tags         = var.tags
+    meta_description = var.description
+    meta_tags        = var.tags
 
     meta_workspace_module = {
       version = "0.0.2"

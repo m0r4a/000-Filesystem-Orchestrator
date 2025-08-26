@@ -5,6 +5,7 @@
 
 | Name | Source | Description |
 |------|--------|-------------|
+| <a name="module_base"></a> [base](#module\_base) | ./project_types/base | It does not contain anything but has all the features of a project_type in case you want a clean template without having to create a `project_type` |
 | <a name="module_workspace"></a> [workspace](#module\_workspace) | ./project_types/workspace | This is the module controlled by the `workspace_master`, this are the templates at workspace level |
 | <a name="module_common"></a> [common](#module\_common) | ./project_types/common | These are templates that apply to all projects (it uses each project’s own metadata) |
 | <a name="module_example_project"></a> [example\_project](#module\_example\_project) | ./project_types/example | This module is designed to be used as a reference for creating your own `projects` |
@@ -28,7 +29,7 @@
 | <a name="input_project_type"></a> [project\_type](#input\_project\_type) | The type of project you want to create | `string` | `"base"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to associate with the workspace | `map(string)` | `{}` | no |
 | <a name="input_template_vars"></a> [template\_vars](#input\_template\_vars) | Variables for the templates | `map(string)` | `{}` | no |
-| <a name="input_terraform_version"></a> [terraform\_version](#input\_terraform\_version) | Terraform version for projects | `string` | `">= 1.12"` | no |
+| <a name="input_terraform_version"></a> [terraform\_version](#input\_terraform\_version) | Terraform version for projects | `string` | `">= 1.6.0"` | no |
 | <a name="input_version_control"></a> [version\_control](#input\_version\_control) | This determines whether you want to use version control in your projects or not | `bool` | `false` | no |
 | <a name="input_workspace_master"></a> [workspace\_master](#input\_workspace\_master) | This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level | `bool` | `false` | no |
 | <a name="input_workspace_path"></a> [workspace\_path](#input\_workspace\_path) | Base path where the workspace will be created | `string` | `"./workspaces"` | no |

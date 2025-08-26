@@ -89,7 +89,7 @@ variable "version_control" {
 variable "terraform_version" {
   description = "Terraform version for projects"
   type        = string
-  default     = ">= 1.12"
+  default     = ">= 1.6.0"
 }
 
 variable "create_templates" {

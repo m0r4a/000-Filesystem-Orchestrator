@@ -8,7 +8,7 @@ locals {
     # In this example you are passing the variables directly
     # you reference it as ${var1}
     example1 = {
-      path = "${var.project_path}/example1.txt"
+      path    = "${var.project_path}/example1.txt"
       content = templatefile("${path.module}/templates/example1.txt.tpl", var.template_vars)
     }
 
