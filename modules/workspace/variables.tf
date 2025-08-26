@@ -66,6 +66,11 @@ variable "template_vars" {
   description = "Variables for the templates"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = var.create_templates || length(var.template_vars) == 0
+    error_message = "template_vars can only be set if create_templates = true"
+  }
 }
 
 variable "common" {
