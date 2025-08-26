@@ -1,6 +1,6 @@
 locals {
   available_modules = {
-    base = module.base
+    base      = module.base
     example   = module.example_project
     terraform = module.terraform_project
     ansible   = module.ansible_project

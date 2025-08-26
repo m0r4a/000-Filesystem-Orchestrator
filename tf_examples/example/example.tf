@@ -13,11 +13,11 @@ module "example_1" {
 
   workspace_path = "../../workdir_example"
   project_name   = "example_workspace"
-  project_type = "example"
+  project_type   = "example"
 
-  created_by   = "A nice user"
-  description  = "This works as a guideline for how you can implement a new project type"
-  environment  = "dev"
+  created_by  = "A nice user"
+  description = "This works as a guideline for how you can implement a new project type"
+  environment = "dev"
 
   terraform_version = ">= 1.5"
   create_templates  = true
@@ -44,11 +44,11 @@ module "example_2" {
 
   workspace_path = "../../workdir_example"
   project_name   = "Terraform"
-  project_type = "base"
+  project_type   = "base"
 
-  created_by   = "A nice user"
-  description  = "This is another project"
-  environment  = "dev"
+  created_by  = "A nice user"
+  description = "This is another project"
+  environment = "dev"
 
   terraform_version = ">= 1.5"
   create_templates  = true

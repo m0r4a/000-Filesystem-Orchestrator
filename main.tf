@@ -10,24 +10,24 @@ terraform {
 
 module "api_service" {
   source = "./modules/workspace"
-  
-  project_name    = "user-service"
-  project_type    = "base"
+
+  project_name     = "user-service"
+  project_type     = "base"
   create_templates = true
-  
+
   template_vars = {
-    service_name    = "user-management-api"
-    service_port    = "8080"
-    database_name   = "users"
-    redis_enabled   = "true"
+    service_name  = "user-management-api"
+    service_port  = "8080"
+    database_name = "users"
+    redis_enabled = "true"
   }
-  
+
   extra_dirs = [
     "config",
     "scripts/deployment",
     "docs/api"
   ]
-  
+
   tags = {
     Service = "user-management"
     Tier    = "backend"
