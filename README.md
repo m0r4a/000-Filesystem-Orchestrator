@@ -280,6 +280,9 @@ module "api_service" {
 # Run examples
 make examples-example
 
+# Destroy the resources
+make examples-destroy
+
 # Clean up
 make examples-clean
 
