@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
-# This damn script is made to output the arrays in an organized way,
-# putting the loose files in the workspace, then a directory, the
-# files of that directory, and so on. But it doesn’t work that
-# well when used with Terraform for some reason,
-# so I’ll just leave it as files and that’s it.
-
-# this needs a rewire since the organization doesn't matter
+# Now just gets the dirs and files and handles
+# the case of having duplicate keys
 
 set -euo pipefail
 
@@ -43,9 +38,10 @@ escape_json() {
 }
 
 make_key() {
-    # Build key from basename
+    # Get the key trimming the path
     local name="$1"
     local key
+    
     if [[ "$name" == .* ]]; then
         local rest="${name#.}"
         if [[ "$rest" == *.* ]]; then
@@ -76,6 +72,9 @@ add_pair() {
     local val="$2"
     local key="$base_key"
 
+    # This handles the duplicate keys, might be interesting
+    # adding like a prefix based on the directory or smth
+
     if key_exists "$key"; then
         local n=2
         while key_exists "${base_key}_$n"; do
@@ -89,50 +88,54 @@ add_pair() {
     VALUES+=("$val")
 }
 
-traverse() {
-    local current_rel="$1"
-    local abs_dir="$TARGET_PATH"
-    [[ "$current_rel" != "." ]] && abs_dir="$TARGET_PATH/$current_rel"
-
-    # files
-    if /usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\0' 2>/dev/null | /usr/bin/sort -z >/dev/null 2>&1; then
-        while IFS= read -r -d $'\0' fname; do
-            [[ -n "$fname" ]] || continue
-            local key_base relpath
-            key_base=$(make_key "$fname")
-            relpath=$([[ "$current_rel" == "." ]] && echo "$fname" || echo "$current_rel/$fname")
-            add_pair "$key_base" "$relpath"
-        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\0' | /usr/bin/sort -z)
+find_all_files() {
+    local target_dir="$1"
+    local filename
+    local key_base
+    
+    if /usr/bin/find "$target_dir" -type f -printf '%P\0' 2>/dev/null | /usr/bin/sort -z >/dev/null 2>&1; then
+        while IFS= read -r -d $'\0' filepath; do
+            [[ -n "$filepath" ]] || continue
+            
+            filename=$(basename "$filepath")
+            key_base=$(make_key "$filename")
+            add_pair "$key_base" "$filepath"
+        done < <(/usr/bin/find "$target_dir" -type f -printf '%P\0' | /usr/bin/sort -z)
     else
-        while IFS= read -r fname; do
-            [[ -n "$fname" ]] || continue
-            local key_base relpath
-            key_base=$(make_key "$fname")
-            relpath=$([[ "$current_rel" == "." ]] && echo "$fname" || echo "$current_rel/$fname")
-            add_pair "$key_base" "$relpath"
-        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type f -printf '%P\n' | /usr/bin/sort)
+        while IFS= read -r filepath; do
+            [[ -n "$filepath" ]] || continue
+            
+            filename=$(basename "$filepath")
+            key_base=$(make_key "$filename")
+            add_pair "$key_base" "$filepath"
+        done < <(/usr/bin/find "$target_dir" -type f -printf '%P\n' | /usr/bin/sort)
+    fi
+}
+
+output_json() {
+    if [[ ${#ORDER[@]} -eq 0 ]]; then
+        echo "{}"
+        return
     fi
 
-    # Dirs
-    if /usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\0' 2>/dev/null | /usr/bin/sort -z >/dev/null 2>&1; then
-        while IFS= read -r -d $'\0' dname; do
-            [[ -n "$dname" ]] || continue
-            local key_base reldir
-            key_base=$(make_key "$dname")
-            reldir=$([[ "$current_rel" == "." ]] && echo "$dname" || echo "$current_rel/$dname")
-            add_pair "$key_base" "$reldir"
-            traverse "$reldir"
-        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\0' | /usr/bin/sort -z)
-    else
-        while IFS= read -r dname; do
-            [[ -n "$dname" ]] || continue
-            local key_base reldir
-            key_base=$(make_key "$dname")
-            reldir=$([[ "$current_rel" == "." ]] && echo "$dname" || echo "$current_rel/$dname")
-            add_pair "$key_base" "$reldir"
-            traverse "$reldir"
-        done < <(/usr/bin/find "$abs_dir" -maxdepth 1 -mindepth 1 -type d -printf '%P\n' | /usr/bin/sort)
-    fi
+    local first=1
+    printf '{'
+    
+    for ((i=0; i<${#ORDER[@]}; i++)); do
+        local key="${ORDER[$i]}"
+        local value="${VALUES[$i]}"
+        local escaped_key escaped_value
+        
+        escaped_key=$(escape_json "$key")
+        escaped_value=$(escape_json "$value")
+
+        [[ $first -eq 1 ]] && first=0 || echo -n ","
+        echo -n $'\n  '
+        printf '"%s": "%s"' "$escaped_key" "$escaped_value"
+    done
+    
+    echo
+    echo '}'
 }
 
 main() {
@@ -140,32 +143,14 @@ main() {
     check_dependencies
 
     local input_path="$1"
+    local target_path
+
     [[ -d "$input_path" ]] || error_exit "Path does not exist or is not a directory: $input_path"
 
-    TARGET_PATH=$(/bin/readlink -f "$input_path")
-
-    traverse "."
-
-    if [[ ${#ORDER[@]} -eq 0 ]]; then
-        echo "{}"
-        exit 0
-    fi
-
-    local first=1
-    printf '{'
-    for ((i=0; i<${#ORDER[@]}; i++)); do
-        local k="${ORDER[$i]}"
-        local v="${VALUES[$i]}"
-        local esc_k esc_v
-        esc_k=$(escape_json "$k")
-        esc_v=$(escape_json "$v")
-
-        [[ $first -eq 1 ]] && first=0 || echo -n ","
-        echo -n $'\n  '
-        printf '"%s":"%s"' "$esc_k" "$esc_v"
-    done
-    echo
-    echo '}'
+    target_path=$(/bin/readlink -f "$input_path")
+    
+    find_all_files "$target_path"
+    output_json
 }
 
 main "$@"

@@ -68,13 +68,13 @@ main() {
     [[ $# -eq 1 ]] || usage
     
     local input_path="$1"
+    local result_hash
     
     check_dependencies
     
     [[ -e "$input_path" ]] || error_exit "Path does not exist: $input_path"
     [[ -r "$input_path" ]] || error_exit "Path is not readable: $input_path"
   
-    local result_hash
     result_hash=$(process_path "$input_path") || error_exit "Failed to process path: $input_path"
 
     echo "{\"hash\":\"$result_hash\"}"    
