@@ -269,6 +269,7 @@ module "api_service" {
 
 ## Documentation
 
+- **[How the .tf interact](./docs/modules_workspace.md#module-flow)**: A flow diagram of how the .tf files interact at a conceptual level
 - **[Module Reference](./docs/modules_workspace.md)**: Complete variable and output documentation
 - **[Custom Project Types Guide](./docs/modules_workspace.md#how-to-create-your-own-project-type)**: Creating your own project types
 - **[Examples](./tf_examples/)**: Working examples for different use cases

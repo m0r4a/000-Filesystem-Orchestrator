@@ -1,3 +1,11 @@
+## Module Flow
+
+<p align="center">
+    <img src="resources/module_flow.png" alt="Flow of the workspace module"/>
+</p>
+
+> [!NOTE]
+> Don't take this as a guide for how Terraform works behind the scenes, I didn't create this to be faithful to how Terraform actually processes files or this project. Think of it more as a way to understand the general idea of the project and how the different .tf files interact with each other
 
 ## Module content
 
