@@ -147,18 +147,10 @@ module "unified_workspace" {
   projects = {
     "example_project" = {
       project_type  = "example"
-      description   = "This works as a guideline"
-      template_vars = {
-        custom_var  = "for your templates"
-      }
     }
     
     "terraform_project" = {
       project_type  = "terraform"
-      description   = "This is another project"
-      template_vars = {
-        custom_var  = "different value"
-      }
     }
   }
 }
