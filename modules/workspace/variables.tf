@@ -22,7 +22,6 @@ variable "workspace_path" {
 variable "project_type" {
   description = "The type of project you want to create"
   type        = string
-  default     = "base"
 }
 
 variable "environment" {
