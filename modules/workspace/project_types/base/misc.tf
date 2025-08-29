@@ -13,10 +13,10 @@ variable "create_templates" {
   default     = true
 }
 
-variable "project_metadata" {
-  description = "Pretty straightforward"
-  type        = any
-}
+# variable "project_metadata" {
+#   description = "Pretty straightforward"
+#   type        = any
+# }
 
 variable "template_vars" {
   description = "Template variables map"

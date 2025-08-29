@@ -1,85 +1,67 @@
-locals {
-  available_modules = {
-    base      = module.base
-    example   = module.example_project
-    terraform = module.terraform_project
-    ansible   = module.ansible_project
-  }
-}
+# locals {
+#   available_modules = {
+#     base      = module.base
+#     example   = module.example_project
+#     terraform = module.terraform_project
+#     ansible   = module.ansible_project
+#   }
+# }
 
 module "base" {
-  count            = var.project_type == "base" ? 1 : 0
-  source           = "./project_types/base"
-  project_path     = local.project_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
+  source   = "./project_types/base"
+  for_each = local.projects_by_type.base
+  
+  project_path     = each.value.project_path
+  create_templates = each.value.create_templates
+#  project_metadata = local.projects_metadata[each.key]
+  template_vars    = each.value.template_vars
 }
 
-module "common" {
-  count            = var.common == true ? 1 : 0
-  source           = "./project_types/common"
-  project_path     = local.project_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
-}
-
-module "workspace" {
-  source           = "./project_types/workspace"
-  workspace_path   = var.workspace_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
-}
-
-module "example_project" {
-  count            = var.project_type == "example" ? 1 : 0
-  source           = "./project_types/example"
-  project_path     = local.project_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
-}
-
-module "terraform_project" {
-  count            = var.project_type == "terraform" ? 1 : 0
-  source           = "./project_types/terraform"
-  project_path     = local.project_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
-}
-
-module "ansible_project" {
-  count            = var.project_type == "ansible" ? 1 : 0
-  source           = "./project_types/ansible"
-  project_path     = local.project_path
-  create_templates = var.create_templates
-  project_metadata = local.project_metadata
-  template_vars    = var.template_vars
-}
+# module "workspace" {
+#   source           = "./project_types/workspace"
+#   workspace_path   = var.workspace_path
+#   create_templates = var.create_templates
+#   project_metadata = local.project_metadata
+#   template_vars    = var.template_vars
+# }
 
 locals {
-  selected_module = one([
-    for module_name, module_instance in local.available_modules :
-    module_instance[0]
-    if var.project_type == module_name && length(module_instance) > 0
-  ])
+  group_projects_by_type = {
+    base      = { for name, config in local.resolved_projects : name => config if config.project_type == "base" }
+  }
 
-  common_module = var.common == true && length(module.common) > 0 ? module.common[0] : null
-
-  # Merge templates: workspace + common (if enabled) + selected type
-  template_files = merge(
-    var.workspace_master == true ? module.workspace.templates : {},
-    local.common_module != null ? local.common_module.templates : {},
-    local.selected_module != null ? local.selected_module.templates : {}
+  selected_project_modules = merge(
+    { for name, module_instance in module.base : name => module_instance },
   )
+  
+  projects_template_files = {
+    for name, config in local.resolved_projects : name => merge(
+    # templates del proyecto correcto
+      try(local.selected_project_modules[name].templates, {})
+    )
+  }
 
-  # Concatenate project dirs: workspace + common (if enabled) + selected type
-  project_dirs = concat(
-    var.workspace_master == true ? module.workspace.project_dirs : [],
-    local.common_module != null ? local.common_module.project_dirs : [],
-    local.selected_module != null ? local.selected_module.project_dirs : []
-  )
+  projects_base_dirs = {
+    for name, config in local.resolved_projects : name => concat(
+      # Directorios default
+      module.project_defaults.project_dirs,
+      # Directorios del tipo de proyecto específico
+      try(local.selected_project_modules[name].project_dirs, [])
+    )
+  }
+
+  projects_all_directories = {
+    for name, config in local.resolved_projects : name => distinct(concat(
+      local.projects_base_dirs[name],
+      config.extra_dirs
+    ))
+  }
+
+  projects_directory_paths = {
+    for name, dirs in local.projects_all_directories : name => [
+      for dir in dirs : "${local.resolved_projects[name].project_path}/${dir}"
+    ]
+  }
+
+  all_template_files = flatten([for name, templates in local.projects_template_files : values(templates)])
 }

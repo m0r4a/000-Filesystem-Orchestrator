@@ -22,7 +22,6 @@ locals {
       tags                   = merge(var.project_defaults.tags, coalesce(config.tags, {}))
     }
   }
-
  # project_dirs is on project_types
   all_directories = distinct(concat(local.project_dirs, var.extra_dirs))
 
