@@ -1,11 +1,7 @@
-variable "project_name" {
-  description = "Name of the project to create"
-  type        = string
-
-  validation {
-    condition     = length(var.project_name) > 0 && length(var.project_name) <= 64
-    error_message = "The name of the workspace must be between 1 and 64 charactesr."
-  }
+variable "version_control" {
+  description = "This determines whether you want to use version control in your projects or not"
+  type        = bool
+  default     = false
 }
 
 variable "workspace_path" {
@@ -19,93 +15,123 @@ variable "workspace_path" {
   }
 }
 
-variable "project_type" {
-  description = "The type of project you want to create"
-  type        = string
-}
-
-variable "environment" {
-  description = "Type of environment (dev, prod, etc.)"
-  type        = string
-  default     = "dev"
+variable "workspace" {
+  description = "Settings for the workspace"
+  type = object({
+    environment = optional(string, "dev")
+    create_templates = optional(bool, true)
+    common = optional(bool, false)
+    template_vars = optional(map(string), {})
+    extra_dirs = optional(map(string), {})
+    created_by = optional(string, "")
+    tags = optional(map(string), {})
+  })
+  default = {}
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.environment))
-    error_message = "Environment must contain only lowercase letters, numbers and hypens"
+    condition     = can(regex("^[a-z0-9-]+$", var.workspace.environment))
+    error_message = "Environment must contain only lowercase letters, numbers and hyphens"
   }
-}
-
-variable "created_by" {
-  description = "User or program creating the workspace"
-  type        = string
-  default     = ""
-}
-
-variable "description" {
-  description = "Description of the workspace purpose"
-  type        = string
-  default     = ""
-}
-
-variable "extra_dirs" {
-  description = "Extra directories to create in the workspace"
-  type        = list(string)
-  default     = []
 
   validation {
     condition = alltrue([
-      for dir in var.extra_dirs : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_/.]*[a-zA-Z0-9]$", dir))
+      for k, v in var.workspace.tags : can(regex("^[a-zA-Z0-9-_]+$", k))
     ])
-
-    error_message = "Directory names must only contain alphanumerics, hyphens, underscores and forward slashes"
+    error_message = "Tag keys must only contain alphanumerics, hyphens and underscores"
   }
-}
-
-variable "template_vars" {
-  description = "Variables for the templates"
-  type        = map(string)
-  default     = {}
 
   validation {
-    condition     = var.create_templates || length(var.template_vars) == 0
+    condition = alltrue([
+      for dir in values(var.workspace.extra_dirs) : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_/.]*[a-zA-Z0-9]$", dir))
+    ])
+    error_message = "Directory names must only contain alphanumerics, hyphens, underscores and forward slashes"
+  }
+
+  validation {
+    condition     = var.workspace.create_templates || length(var.workspace.template_vars) == 0
     error_message = "template_vars can only be set if create_templates = true"
   }
 }
 
-variable "common" {
-  description = "Enables the common module"
-  type        = bool
-  default     = false
-}
-
-variable "workspace_master" {
-  description = "This variable determines whether this project will be responsible for passing its variables to the templates at the workspace level"
-  type        = bool
-  default     = false
-}
-
-variable "version_control" {
-  description = "This determines whether you want to use version control in your projects or not"
-  type        = bool
-  default     = false
-}
-
-variable "create_templates" {
-  description = "Weather to create template files based on project type"
-  type        = bool
-  default     = true
-}
-
-variable "tags" {
-  description = "Tags to associate with the project"
-  type        = map(string)
-  default     = {}
+variable "project_defaults" {
+  description = "Default configuration for all projects in workspace"
+  type = object({
+    project_type     = string
+    description      = string
+    create_templates = optional(bool)
+    common          = optional(bool)
+    extra_dirs      = optional(list(string), [])
+    template_vars   = optional(map(string))
+    tags            = optional(map(string))
+  })
+  default = {}
 
   validation {
     condition = alltrue([
-      for k, v in var.tags : can(regex("^[a-zA-Z0-9-_]+$", k))
+      for dir in var.project_defaults.extra_dirs : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_/.]*[a-zA-Z0-9]$", dir))
     ])
+    error_message = "Directory names must only contain alphanumerics, hyphens, underscores and forward slashes"
+  }
 
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.project_defaults.tags, {}) : can(regex("^[a-zA-Z0-9-_]+$", k))
+    ])
     error_message = "Tag keys must only contain alphanumerics, hyphens and underscores"
+  }
+}
+
+variable "projects" {
+  description = "Map of projects to create in the workspace"
+  type = map(object({
+    project_type     = string
+    created_by       = string
+    description      = string
+    environment      = optional(string)
+    create_templates = optional(bool)
+    common          = optional(bool)
+    extra_dirs      = optional(list(string), [])
+    template_vars   = optional(map(string))
+    tags            = optional(map(string))
+  }))
+
+  validation {
+    condition = alltrue([
+      for name, project in var.projects : length(name) > 0 && length(name) <= 64
+    ])
+    error_message = "Project names must be between 1 and 64 characters"
+  }
+
+  validation {
+    condition = alltrue([
+      for name, project in var.projects : project.environment == null || can(regex("^[a-z0-9-]+$", project.environment))
+    ])
+    error_message = "Environment must contain only lowercase letters, numbers and hyphens"
+  }
+
+  validation {
+    condition = alltrue([
+      for name, project in var.projects : alltrue([
+        for dir in project.extra_dirs : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_/.]*[a-zA-Z0-9]$", dir))
+      ])
+    ])
+    error_message = "Directory names must only contain alphanumerics, hyphens, underscores and forward slashes"
+  }
+
+  validation {
+    condition = alltrue([
+      for name, project in var.projects : alltrue([
+        for k, v in coalesce(project.tags, {}) : can(regex("^[a-zA-Z0-9-_]+$", k))
+      ])
+    ])
+    error_message = "Tag keys must only contain alphanumerics, hyphens and underscores"
+  }
+
+  validation {
+    condition = alltrue([
+      for name, project in var.projects : 
+        coalesce(project.create_templates, true) || length(coalesce(project.template_vars, {})) == 0
+    ])
+    error_message = "template_vars can only be set if create_templates = true"
   }
 }
