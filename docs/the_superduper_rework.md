@@ -87,7 +87,7 @@ module "unified_workspace" {
     template_vars = {
       custom_var = "workspace_var"
     }
-    extra_dirs = ["workspace_extra_dir"
+    extra_dirs = ["workspace_extra_dir"]
   }
   
   project_defaults = {
@@ -157,3 +157,5 @@ module "unified_workspace" {
 ```
 
 I mean, I think this is a fairly simple config
+
+Im worried about the idempotency tho, if you apply twice, wouldn't everything change because the workspace path changes? maybe add a trigger or lifecycle to that so it only runs once?

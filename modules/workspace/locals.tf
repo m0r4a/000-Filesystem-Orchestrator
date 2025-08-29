@@ -1,28 +1,29 @@
+resource "random_string" "suffix" {
+  length  = 5
+  upper   = false
+  special = false
+}
+
 locals {
-  project_name_normalized = replace(lower(var.project_name), "/[^a-z0-9/]", "-")
+  suffix_workspace_path = "${var.workspace_path}-${random_string.suffix.result}"
 
-  project_path = "${var.workspace_path}/${local.project_name_normalized}"
-
-  project_metadata = {
-    meta_project_name   = var.project_name
-    meta_workspace_path = var.workspace_path
-
-    meta_created_by = var.created_by
-    meta_created_at = formatdate("YYYY-MM-DD hh:mm:ss", timestamp())
-
-    meta_project_type = var.project_type
-    meta_environment  = var.environment
-
-    meta_description = var.description
-    meta_tags        = var.tags
-
-    meta_workspace_module = {
-      version = "0.0.2"
-      source  = path.module
+  resolved_projects = {
+    for name, config in var.projects : name => {
+      project_name            = name
+      project_name_normalized = replace(lower(name), "/[^a-z0-9/]", "-")
+      project_path           = "${local.suffix_workspace_path}/${replace(lower(name), "/[^a-z0-9/]", "-")}"
+      project_type           = config.project_type
+      description            = config.description
+      environment            = coalesce(config.environment, var.project_defaults.environment)
+      create_templates       = coalesce(config.create_templates, var.project_defaults.create_templates)
+      common                 = coalesce(config.common, var.project_defaults.common)
+      extra_dirs             = coalesce(config.extra_dirs, var.var.project_defaults.extra_dirs)
+      template_vars          = merge(var.project_defaults.template_vars, coalesce(config.template_vars, {}))
+      tags                   = merge(var.project_defaults.tags, coalesce(config.tags, {}))
     }
   }
 
-  # project_dirs is on project_types
+ # project_dirs is on project_types
   all_directories = distinct(concat(local.project_dirs, var.extra_dirs))
 
   directory_paths = [for dir in local.all_directories : "${local.project_path}/${dir}"]

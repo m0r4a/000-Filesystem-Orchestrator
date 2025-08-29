@@ -85,7 +85,6 @@ variable "projects" {
   description = "Map of projects to create in the workspace"
   type = map(object({
     project_type     = string
-    created_by       = string
     description      = string
     environment      = optional(string)
     create_templates = optional(bool)

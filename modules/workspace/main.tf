@@ -4,7 +4,7 @@ resource "null_resource" "create_directories" {
   triggers = {
     # you need a trigger
     # you wouln't be able to delete it otherwise
-    workspace_path = var.workspace_path
+    workspace_path = local.suffix_workspace_path
   }
 
   provisioner "local-exec" {
@@ -30,13 +30,13 @@ resource "local_file" "templates" {
 resource "null_resource" "set_permissions" {
   provisioner "local-exec" {
     command = <<-EOT
-     find '${var.workspace_path}' -type d -exec chmod 755 {} \;
-     find '${var.workspace_path}' -type f -exec chmod 644 {} \;
+     find '${local.suffix_workspace_path}' -type d -exec chmod 755 {} \;
+     find '${local.suffix_workspace_path}' -type f -exec chmod 644 {} \;
      if [ -d '${local.project_path}/scripts' ]; then
        find '${local.project_path}/scripts' -type f -exec chmod u+x {} \;
      fi
-     if [ -d '${var.workspace_path}/scripts' ]; then
-       find '${var.workspace_path}/scripts' -type f -exec chmod u+x {} \;
+     if [ -d '${local.suffix_workspace_path}/scripts' ]; then
+       find '${local.suffix_workspace_path}/scripts' -type f -exec chmod u+x {} \;
      fi
    EOT
   }
@@ -44,29 +44,13 @@ resource "null_resource" "set_permissions" {
   depends_on = [local_file.templates]
 }
 
-resource "local_file" "project_metadata" {
-  filename = "${local.project_path}/.metadata.json"
-
-  content = jsonencode({
-    metadata      = local.project_metadata
-    directories   = local.directory_paths
-    files_created = keys(local.template_files)
-  })
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-
-  depends_on = [null_resource.set_permissions]
-}
-
 resource "null_resource" "workspace_seed" {
   # Since this thing is ran multiple times, each time per project
   # I can't use triggers, to decide if something occurs or not
   provisioner "local-exec" {
     command = <<-EOT
-      if [ ! -f "${var.workspace_path}/.seed.json" ]; then
-        ${path.module}/scripts/checksum ${var.workspace_path} > ${var.workspace_path}/.seed.json
+      if [ ! -f "${local.suffix_workspace_path}/.seed.json" ]; then
+        ${path.module}/scripts/checksum ${local.suffix_workspace_path} > ${local.suffix_workspace_path}/.seed.json
       fi
     EOT
   }
@@ -76,6 +60,6 @@ resource "null_resource" "workspace_seed" {
 
 data "external" "workspace_files" {
   count      = var.workspace_master ? 1 : 0
-  program    = ["${path.module}/scripts/workspace_files", "${var.workspace_path}"]
+  program    = ["${path.module}/scripts/workspace_files", "${local.suffix_workspace_path}"]
   depends_on = [null_resource.workspace_seed]
 }
