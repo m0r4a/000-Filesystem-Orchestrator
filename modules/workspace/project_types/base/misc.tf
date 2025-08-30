@@ -1,30 +1,21 @@
-terraform {
-  required_version = ">= 1.6.0"
-}
-
-variable "project_path" {
-  description = "The project path"
-  type        = string
-}
-
-variable "create_templates" {
-  description = "Weather to create template files based on project type"
-  type        = bool
-  default     = true
-}
-
-# variable "project_metadata" {
-#   description = "Pretty straightforward"
-#   type        = any
-# }
-
-variable "template_vars" {
-  description = "Template variables map"
-  type        = map(string)
+variable "projects" {
+  description = "Map of projects of this type"
+  type = map(object({
+    project_name            = string
+    project_name_normalized = string
+    project_path           = string
+    project_type           = string
+    description            = string
+    create_templates       = bool
+    common                 = bool
+    extra_dirs             = list(string)
+    template_vars          = map(string)
+    tags                   = map(string)
+  }))
 }
 
 output "templates" {
-  value = local.base_templates
+  value = local.templates
 }
 
 output "project_dirs" {

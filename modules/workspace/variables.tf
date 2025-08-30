@@ -56,8 +56,8 @@ variable "workspace" {
 variable "project_defaults" {
   description = "Default configuration for all projects in workspace"
   type = object({
-    project_type     = string
-    description      = string
+    project_type     = optional(string)
+    description      = optional(string)
     create_templates = optional(bool)
     common          = optional(bool)
     extra_dirs      = optional(list(string), [])
@@ -86,12 +86,11 @@ variable "projects" {
   type = map(object({
     project_type     = string
     description      = string
-    environment      = optional(string)
-    create_templates = optional(bool)
-    common          = optional(bool)
+    create_templates = optional(bool, true)
+    common          = optional(bool, false)
     extra_dirs      = optional(list(string), [])
-    template_vars   = optional(map(string))
-    tags            = optional(map(string))
+    template_vars   = optional(map(string), {})
+    tags            = optional(map(string), {})
   }))
 
   validation {
@@ -99,13 +98,6 @@ variable "projects" {
       for name, project in var.projects : length(name) > 0 && length(name) <= 64
     ])
     error_message = "Project names must be between 1 and 64 characters"
-  }
-
-  validation {
-    condition = alltrue([
-      for name, project in var.projects : project.environment == null || can(regex("^[a-z0-9-]+$", project.environment))
-    ])
-    error_message = "Environment must contain only lowercase letters, numbers and hyphens"
   }
 
   validation {
