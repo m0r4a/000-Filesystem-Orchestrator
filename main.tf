@@ -1,9 +1,11 @@
 module "unified_workspace" {
   source = "./modules/workspace"
   
-  workspace_path   = "./workspaces/my-workspace"
+  workspace_path   = "./workdir_example/my-workspace"
 
   project_defaults = {}
+
+  workspace = {}
 
   projects = {
     "example_project" = {
@@ -23,10 +25,7 @@ module "unified_workspace" {
     "another_one_bites_the_dust" = {
       project_type = "terraform"
       description = "test"
+      create_templates = false
     }
   }
-}
-
-output "variable" {
-  value = module.unified_workspace.templates_temp
 }

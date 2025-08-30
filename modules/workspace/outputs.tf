@@ -1,7 +1,3 @@
-output "templates_temp" {
-  value = local.templates_temp
-}
-
 # output "workspace_path" {
 #   description = "Full path of the created workspace"
 #   value       = var.workspace_path

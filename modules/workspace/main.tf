@@ -1,10 +1,10 @@
 resource "null_resource" "create_directories" {
-  count = length(local.all_project_dirs)  # ← Cambio aquí
+  count = length(local.all_project_dirs)
   triggers = {
     workspace_path = local.suffix_workspace_path
   }
   provisioner "local-exec" {
-    command = "mkdir -p '${local.all_project_dirs[count.index]}'"  # ← Cambio aquí
+    command = "mkdir -p '${local.all_project_dirs[count.index]}'"
   }
   provisioner "local-exec" {
     when    = destroy
@@ -15,12 +15,11 @@ resource "null_resource" "create_directories" {
 }
 
 resource "local_file" "templates" {
-  for_each = local.templates_temp
+  for_each = local.final_templates
   
   filename = each.value.path
   content  = each.value.content
   
-  # Aseguramos que los directorios existan
   depends_on = [null_resource.create_directories]
 }
 
@@ -33,7 +32,6 @@ resource "null_resource" "set_permissions" {
    EOT
   }
 
-  # depends_on = [local_file.templates]
   depends_on = [local_file.templates]
 }
 

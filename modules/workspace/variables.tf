@@ -26,29 +26,29 @@ variable "workspace" {
     created_by = optional(string, "")
     tags = optional(map(string), {})
   })
-  default = {}
+  default = null
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.workspace.environment))
+    condition     = var.workspace == null || can(regex("^[a-z0-9-]+$", var.workspace.environment))
     error_message = "Environment must contain only lowercase letters, numbers and hyphens"
   }
 
   validation {
-    condition = alltrue([
+    condition = var.workspace == null || alltrue([
       for k, v in var.workspace.tags : can(regex("^[a-zA-Z0-9-_]+$", k))
     ])
     error_message = "Tag keys must only contain alphanumerics, hyphens and underscores"
   }
 
   validation {
-    condition = alltrue([
+    condition = var.workspace == null || alltrue([
       for dir in values(var.workspace.extra_dirs) : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_/.]*[a-zA-Z0-9]$", dir))
     ])
     error_message = "Directory names must only contain alphanumerics, hyphens, underscores and forward slashes"
   }
 
   validation {
-    condition     = var.workspace.create_templates || length(var.workspace.template_vars) == 0
+    condition     = var.workspace == null || var.workspace.create_templates || length(var.workspace.template_vars) == 0
     error_message = "template_vars can only be set if create_templates = true"
   }
 }
