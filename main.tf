@@ -1,31 +1,25 @@
-module "unified_workspace" {
+module "workspace" {
   source = "./modules/workspace"
   
   workspace_path   = "./workdir_example/my-workspace"
 
-  project_defaults = {}
+  project_defaults = {
+    template_vars = {global_var = "test_global_var"}
+  }
 
   workspace = {}
 
   projects = {
-    "example_project" = {
-      project_type  = "example"
-      description = "test"
-      template_vars = {
-        custom_var = "my_var"
-      }
-    }
-    "example_project2" = {
-      project_type  = "example"
+    "terraform 1" = {
+      project_type  = "terraform"
       description = "test"
       template_vars = {
         custom_var = "my_var_2lol"
       }
     }
-    "another_one_bites_the_dust" = {
+    "terraform" = {
       project_type = "terraform"
       description = "test"
-      create_templates = false
     }
   }
 }

@@ -49,8 +49,7 @@ resource "null_resource" "workspace_seed" {
   depends_on = [null_resource.set_permissions]
 }
 
-# data "external" "workspace_files" {
-#   count      = var.workspace_master ? 1 : 0
-#   program    = ["${path.module}/scripts/workspace_files", "${local.suffix_workspace_path}"]
-#   depends_on = [null_resource.workspace_seed]
-# }
+data "external" "workspace_files" {
+  program    = ["${path.module}/scripts/workspace_files", "${local.suffix_workspace_path}"]
+  depends_on = [null_resource.workspace_seed]
+}
