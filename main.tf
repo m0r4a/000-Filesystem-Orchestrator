@@ -2,6 +2,7 @@ module "workspace" {
   source = "./modules/workspace"
 
   workspace_path = "./my-workspace"
+  version_control = true
 
   project_defaults = {
     template_vars = { global_var = "test_global_var" }

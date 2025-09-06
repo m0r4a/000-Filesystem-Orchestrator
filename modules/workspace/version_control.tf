@@ -1,7 +1,7 @@
 locals {
   # Gathering information
-  metadata_exists   = fileexists("${var.workspace_path}/.versions.json")
-  existing_versions = local.metadata_exists ? try(jsondecode(file("${var.workspace_path}/.versions.json")).versions, {}) : {}
+  metadata_exists   = fileexists("${local.suffix_workspace_path}/.versions.json")
+  existing_versions = local.metadata_exists ? try(jsondecode(file("${local.suffix_workspace_path}/.versions.json")).versions, {}) : {}
 
   current_hash = data.external.workspace_hash.result.hash
   next_version = format("version_%05d", length(local.existing_versions) + 1)
@@ -15,14 +15,14 @@ locals {
 }
 
 data "external" "workspace_hash" {
-  program = ["${path.module}/scripts/checksum", "${var.workspace_path}"]
+  program = ["${path.module}/scripts/checksum", "${local.suffix_workspace_path}"]
 
-  depends_on = [null_resource.workspace_seed]
+  depends_on = [data.external.workspace_files]
 }
 
 resource "local_file" "project_metadata_versioned" {
   count    = var.version_control ? 1 : 0
-  filename = "${var.workspace_path}/.versions.json"
+  filename = "${local.suffix_workspace_path}/.versions.json"
 
   content = jsonencode({
     versions = local.new_versions
