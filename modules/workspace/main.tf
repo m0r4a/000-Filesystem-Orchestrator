@@ -1,11 +1,14 @@
 resource "null_resource" "create_directories" {
   count = length(local.all_project_dirs)
+
   triggers = {
     workspace_path = local.suffix_workspace_path
   }
+
   provisioner "local-exec" {
     command = "mkdir -p '${local.all_project_dirs[count.index]}'"
   }
+
   provisioner "local-exec" {
     when    = destroy
     command = "rm -rf '${self.triggers.workspace_path}'"
@@ -15,11 +18,11 @@ resource "null_resource" "create_directories" {
 }
 
 resource "local_file" "templates" {
-  for_each = local.final_templates
-  
+  for_each = local.all_templates
+
   filename = each.value.path
   content  = each.value.content
-  
+
   depends_on = [null_resource.create_directories]
 }
 
@@ -36,14 +39,12 @@ resource "null_resource" "set_permissions" {
 }
 
 resource "null_resource" "workspace_seed" {
-  # Since this thing is ran multiple times, each time per project
-  # I can't use triggers, to decide if something occurs or not
   provisioner "local-exec" {
-    command = <<-EOT
-      if [ ! -f "${local.suffix_workspace_path}/.seed.json" ]; then
-        ${path.module}/scripts/checksum ${local.suffix_workspace_path} > ${local.suffix_workspace_path}/.seed.json
-      fi
-    EOT
+    command = "${path.module}/scripts/checksum ${local.suffix_workspace_path} > ${local.suffix_workspace_path}/.seed.json"
+  }
+
+  lifecycle {
+    replace_triggered_by = []
   }
 
   depends_on = [null_resource.set_permissions]

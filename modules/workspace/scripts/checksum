@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 usage() {
@@ -14,7 +13,7 @@ error_exit() {
 }
 
 check_dependencies() {
-    local commands=("/usr/bin/find" "/usr/bin/sort" "/bin/cat" "/usr/bin/sha256sum" "/usr/bin/cut")
+    local commands=("/usr/bin/find" "/usr/bin/sort" "/bin/cat" "/usr/bin/sha256sum" "/usr/bin/cut" "/usr/bin/basename")
     
     for cmd in "${commands[@]}"; do
         [[ -x "$cmd" ]] || error_exit "Required command not found or not executable: $cmd"
@@ -25,7 +24,7 @@ process_path() {
     local target_path="$1"
     local temp_file
     
-    # In this temp file the data will be acumulated
+    # In this temp file the data will be accumulated
     temp_file=$(/bin/mktemp) || error_exit "Failed to create temporary file"
     
     # This forces to remove the tempfile when exiting the program
@@ -33,7 +32,6 @@ process_path() {
     
     # Gets all the files and dirs and they are sorted after, this may increase a lot the
     # resources needed for the script but ensures that the hash will be the same
-
     # Removing the .versions.json is very important, otherwise, when version_control = true
     # since the hash is updated in the file, the hash of the metadata file will always be different.
     local items
@@ -42,10 +40,17 @@ process_path() {
     while IFS= read -r item; do
         [[ -n "$item" ]] || continue
         
-        # Get the path of the item
-        echo "PATH:$item" >> "$temp_file" || error_exit "Failed to write to temporary file"
+        # Skip the target path itself (it causes not being deterministic
+        # due to the random suffix
+        [[ "$item" != "$target_path" ]] || continue
         
-        # If file then get item's content basically
+        # Get the basenames
+        local item_name
+        item_name=$(/usr/bin/basename "$item") || error_exit "Failed to get basename for: $item"
+        
+        echo "NAME:$item_name" >> "$temp_file" || error_exit "Failed to write to temporary file"
+        
+        # If file then get item's content
         if [[ -f "$item" ]]; then
             echo "CONTENT:" >> "$temp_file" || error_exit "Failed to write content marker"
             if ! /bin/cat "$item" >> "$temp_file" 2>/dev/null; then
@@ -76,7 +81,6 @@ main() {
     [[ -r "$input_path" ]] || error_exit "Path is not readable: $input_path"
   
     result_hash=$(process_path "$input_path") || error_exit "Failed to process path: $input_path"
-
     echo "{\"hash\":\"$result_hash\"}"    
 }
 

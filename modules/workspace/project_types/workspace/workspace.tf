@@ -22,7 +22,7 @@ locals {
     for dir in ["workspace_module"] : "${var.workspace_path}/${dir}"
   ])
 
-  workspace_templates = var.workspace_config.create_templates  ? {
+  workspace_templates = var.workspace_config.create_templates ? {
     readme = {
       path    = "${var.workspace_path}/README.md"
       content = templatefile("${path.module}/templates/README.md.tpl", var.workspace_config.template_vars)
@@ -31,5 +31,5 @@ locals {
       path    = "${var.workspace_path}/.gitignore"
       content = file("${path.module}/templates/gitignore.tpl")
     }
-    } : {}
-  }
+  } : {}
+}

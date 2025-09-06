@@ -18,13 +18,13 @@ variable "workspace_path" {
 variable "workspace" {
   description = "Settings for the workspace"
   type = object({
-    environment = optional(string, "dev")
+    environment      = optional(string, "dev")
     create_templates = optional(bool, true)
-    common = optional(bool, false)
-    template_vars = optional(map(string), {})
-    extra_dirs = optional(map(string), {})
-    created_by = optional(string, "")
-    tags = optional(map(string), {})
+    common           = optional(bool, false)
+    template_vars    = optional(map(string), {})
+    extra_dirs       = optional(map(string), {})
+    created_by       = optional(string, "")
+    tags             = optional(map(string), {})
   })
   default = null
 
@@ -56,13 +56,12 @@ variable "workspace" {
 variable "project_defaults" {
   description = "Default configuration for all projects in workspace"
   type = object({
-    project_type     = optional(string)
     description      = optional(string)
     create_templates = optional(bool)
-    common          = optional(bool)
-    extra_dirs      = optional(list(string), [])
-    template_vars   = optional(map(string))
-    tags            = optional(map(string))
+    common           = optional(bool)
+    extra_dirs       = optional(list(string), [])
+    template_vars    = optional(map(string))
+    tags             = optional(map(string))
   })
   default = {}
 
@@ -85,12 +84,12 @@ variable "projects" {
   description = "Map of projects to create in the workspace"
   type = map(object({
     project_type     = string
-    description      = string
+    description      = optional(string, "")
     create_templates = optional(bool, true)
-    common          = optional(bool, false)
-    extra_dirs      = optional(list(string), [])
-    template_vars   = optional(map(string), {})
-    tags            = optional(map(string), {})
+    common           = optional(bool, false)
+    extra_dirs       = optional(list(string), [])
+    template_vars    = optional(map(string), {})
+    tags             = optional(map(string), {})
   }))
 
   validation {
@@ -98,6 +97,18 @@ variable "projects" {
       for name, project in var.projects : length(name) > 0 && length(name) <= 64
     ])
     error_message = "Project names must be between 1 and 64 characters"
+  }
+
+  validation {
+    condition = alltrue([
+      for p in values(var.projects) : contains(local.projects_list, p.project_type)
+    ])
+    error_message = "Each project_type should be in var.projects_list."
+  }
+
+  validation {
+    condition     = length(values(var.projects)) == length(distinct([for p in values(var.projects) : p.project_type]))
+    error_message = "Each project_type must be unique across all projects."
   }
 
   validation {
@@ -120,8 +131,8 @@ variable "projects" {
 
   validation {
     condition = alltrue([
-      for name, project in var.projects : 
-        coalesce(project.create_templates, true) || length(coalesce(project.template_vars, {})) == 0
+      for name, project in var.projects :
+      coalesce(project.create_templates, true) || length(coalesce(project.template_vars, {})) == 0
     ])
     error_message = "template_vars can only be set if create_templates = true"
   }

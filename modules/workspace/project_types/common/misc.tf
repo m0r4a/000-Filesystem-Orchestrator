@@ -1,32 +1,33 @@
-terraform {
-  required_version = ">= 1.6.0"
+variable "project" {
+  description = "This contains all the information needed for the project creation"
+  type = object({
+    project_name     = string
+    project_path     = string
+    create_templates = bool
+    extra_dirs       = list(string)
+    template_vars    = map(string)
+    metadata = object({
+      meta_project_name = string
+      meta_project_type = string
+      meta_description  = string
+      meta_tags         = map(string)
+    })
+  })
 }
 
-variable "project_path" {
-  description = "The project path"
-  type        = string
-}
+locals {
+  prefixed_templates = { for k, v in local.templates : "${var.project.project_name}-${k}" => v }
 
-variable "create_templates" {
-  description = "Weather to create template files based on project type"
-  type        = bool
-  default     = true
-}
-
-variable "project_metadata" {
-  description = "Pretty straightforward"
-  type        = any
-}
-
-variable "template_vars" {
-  description = "Template variables map"
-  type        = map(string)
+  final_project_dirs = flatten([
+    [for dir in local.project_dirs : "${var.project.project_path}/${dir}"],
+    [for extra in var.project.extra_dirs : "${var.project.project_path}/${extra}"]
+  ])
 }
 
 output "templates" {
-  value = local.common_templates
+  value = local.prefixed_templates
 }
 
 output "project_dirs" {
-  value = local.project_dirs
+  value = local.final_project_dirs
 }

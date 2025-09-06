@@ -13,14 +13,14 @@ locals {
     "roles/common/defaults",
   ]
 
-  templates = var.create_templates ? {
+  templates = var.project.create_templates ? {
     site = {
-      path    = "${var.project_path}/site.yml"
-      content = templatefile("${path.module}/templates/site.yml.tpl", var.project_metadata)
+      path    = "${var.project.project_path}/site.yml"
+      content = templatefile("${path.module}/templates/site.yml.tpl", var.project.metadata)
     }
     production_inventory = {
-      path    = "${var.project_path}/production/inventory.ini"
-      content = templatefile("${path.module}/templates/inventory.ini.tpl", var.project_metadata)
+      path    = "${var.project.project_path}/production/inventory.ini"
+      content = templatefile("${path.module}/templates/inventory.ini.tpl", var.project.project_metadata)
     }
   } : {}
 

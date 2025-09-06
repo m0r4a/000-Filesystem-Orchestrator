@@ -1,25 +1,28 @@
 module "workspace" {
   source = "./modules/workspace"
-  
-  workspace_path   = "./workdir_example/my-workspace"
+
+  workspace_path = "./my-workspace"
 
   project_defaults = {
-    template_vars = {global_var = "test_global_var"}
+    template_vars = { global_var = "test_global_var" }
   }
 
   workspace = {}
 
   projects = {
-    "terraform 1" = {
-      project_type  = "terraform"
-      description = "test"
+    "example" = {
+      project_type = "example"
+      extra_dirs   = ["test_extra_dir"]
+      description  = "test description"
       template_vars = {
         custom_var = "my_var_2lol"
+      }
+      tags = {
+        test_tag = "webos"
       }
     }
     "terraform" = {
       project_type = "terraform"
-      description = "test"
     }
   }
 }

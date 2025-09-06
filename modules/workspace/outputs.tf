@@ -1,12 +1,12 @@
 output "workspace_path" {
   description = "Full path of the created workspace"
-   value       = local.suffix_workspace_path
+  value       = local.suffix_workspace_path
 }
 
-output "project_names" {
-  description = "Project name used"
-   value       = keys(local.resolved_projects)
-}
+# output "project_names" {
+#   description = "Project name used"
+#    value       = keys(local.resolved_projects)
+# }
 
 output "directories_created" {
   description = "List of created directories in the workspace"

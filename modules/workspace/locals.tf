@@ -7,18 +7,21 @@ resource "random_string" "suffix" {
 locals {
   suffix_workspace_path = "${var.workspace_path}-${random_string.suffix.result}"
 
-  resolved_projects = {
-    for name, config in var.projects : name => {
-      project_name            = name
-      project_name_normalized = replace(lower(name), "/[^a-z0-9/]", "-")
-      project_path           = "${local.suffix_workspace_path}/${replace(lower(name), "/[^a-z0-9/]", "-")}"
-      project_type           = config.project_type
-      description            = config.description
-      create_templates       = coalesce(config.create_templates, var.project_defaults.create_templates)
-      common                 = coalesce(config.common, var.project_defaults.common)
-      extra_dirs             = coalesce(config.extra_dirs, var.project_defaults.extra_dirs)
-      template_vars          = merge(var.project_defaults.template_vars, coalesce(config.template_vars, {}))
-      tags                   = merge(var.project_defaults.tags, coalesce(config.tags, {}))
+  projects_by_type = {
+    for name, config in var.projects : config.project_type => {
+      project_name     = replace(lower(name), "/[^a-z0-9/]", "-")
+      project_path     = "${local.suffix_workspace_path}/${replace(lower(name), "/[^a-z0-9/]", "-")}"
+      create_templates = coalesce(config.create_templates, var.project_defaults.create_templates)
+      template_vars    = merge(var.project_defaults.template_vars, coalesce(config.template_vars, {}))
+      extra_dirs       = coalesce(config.extra_dirs, var.project_defaults.extra_dirs)
+
+      metadata = {
+        meta_project_name = name
+        meta_project_type = config.project_type
+        meta_description  = config.description
+        meta_tags         = merge(var.project_defaults.tags, coalesce(config.tags, {}))
+      }
     }
   }
+
 }

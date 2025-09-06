@@ -1,14 +1,18 @@
 variable "workspace_config" {
   description = "Map of projects of this type"
   type = object({
-    environment = string
+    environment      = string
     create_templates = bool
-    common = bool
-    template_vars = map(string)
-    extra_dirs = map(string)
-    created_by = string
-    tags = map(string)
+    common           = bool
+    template_vars    = map(string)
+    extra_dirs       = map(string)
+    created_by       = string
+    tags             = map(string)
   })
+}
+
+locals {
+  prefixed_templates = { for k, v in local.workspace_templates : "workspace-${k}" => v }
 }
 
 variable "workspace_path" {
@@ -16,8 +20,8 @@ variable "workspace_path" {
   type        = string
 }
 
-output "workspace_templates" {
-  value = local.workspace_templates
+output "templates" {
+  value = local.prefixed_templates
 }
 
 output "project_dirs" {
